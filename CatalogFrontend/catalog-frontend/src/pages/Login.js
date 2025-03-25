@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../css/Login.css";
 
 function Login() {
     const [username, setUsername] = useState("");
@@ -6,36 +7,40 @@ function Login() {
     const [password, setPassword] = useState("");
     const [isProfessor, setIsProfessor] = useState(false);
 
+
     return (
-        <div>
-            <h1>Login</h1>
-            <form>
+        <div className="login-container">
+            <form className="login-form">
+                <h1>Login</h1>
                 <input
                     type="text"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                 />
                 <input
                     type="text"
                     placeholder="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
                 />
                 <input
                     type="text"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
                 />
-                <label>
+                <div className="toggle-container">
                     <input
                         type="checkbox"
                         checked={isProfessor}
                         onChange={() => setIsProfessor(!isProfessor)}
                     />
-                    Sunt profesor
-                </label>
+                    <label>Sunt profesor</label>
+                </div>
                 <button type="submit">Login</button>
             </form>
         </div>
