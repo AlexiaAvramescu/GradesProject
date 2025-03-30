@@ -1,6 +1,9 @@
 // src/pages/TeacherClassView.js
 import React, { useState }from 'react';
 import { useParams, Link } from 'react-router-dom';
+import RemoveStudentsDialog from '../components/RemoveStudentsDialog';
+import AddStudentsDialog from '../components/AddStudentsDialog';
+
 import '../css/TeacherClassView.css';
 
 const classes = [
@@ -27,7 +30,18 @@ const classes = [
   }
 ];
 
+const allStudents = [
+    'Alice Popescu', 'George Ionescu', 'Maria Enache',
+    'Vlad Radu', 'Elena Marinescu',
+    'Diana Tudor', 'Andrei Nistor', 'Simona Rădulescu',
+    'Ioana Dobre', 'Rares Mihai', 'Alex Stoica' // extra example students
+  ];
+  
+
 function TeacherClassView() {
+    const [showAddDialog, setShowAddDialog] = useState(false);
+    const [selectedToAdd, setSelectedToAdd] = useState([]);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { classId } = useParams();
     const selectedClass = classes.find((c) => c.id === classId);
     const [checkedStudents, setCheckedStudents] = useState([]);
@@ -53,33 +67,86 @@ function TeacherClassView() {
           <div className="info-row">
             {/* Students container */}
             <div className="student-list-container">
-            <div className="list-header">
-                <label className="select-all-checkbox">
-                <input
-                    type="checkbox"
-                    checked={checkedStudents.length === selectedClass.students.length}
-                    onChange={() => {
-                    const allSelected = checkedStudents.length === selectedClass.students.length;
-                    setCheckedStudents(allSelected ? [] : [...selectedClass.students]);
+                <div className="list-header">
+                    <label className="select-all-checkbox">
+                    <input
+                        type="checkbox"
+                        checked={checkedStudents.length === selectedClass.students.length}
+                        onChange={() => {
+                        const allSelected = checkedStudents.length === selectedClass.students.length;
+                        setCheckedStudents(allSelected ? [] : [...selectedClass.students]);
+                        }}
+                    />
+                    </label>
+                    <h3>Students</h3>
+                </div>
+
+                <div className="student-list">
+                    {selectedClass.students.map((student, index) => (
+                    <label className="student-card" key={index}>
+                        <input
+                        type="checkbox"
+                        checked={checkedStudents.includes(student)}
+                        onChange={() => handleCheckboxChange(student)}
+                        />
+                        <span>{student}</span>
+                    </label>
+                    ))}
+                </div>
+                <div className="student-actions">
+                    <button
+                        className="action-btn"
+                        onClick={() => {
+                                if (checkedStudents.length > 0) {
+                                setShowConfirmDialog(true);
+                                }
+                            }}
+                            >
+                            Remove Students from Class
+                    </button>
+                    <button
+                        className="action-btn"
+                        onClick={() => setShowAddDialog(true)}
+                        >
+                        Add Students to Class
+                        </button>
+                    <button className="action-btn">Add Grade</button>
+                </div>
+                <RemoveStudentsDialog
+                    visible={showConfirmDialog}
+                    students={checkedStudents}
+                    onCancel={() => setShowConfirmDialog(false)}
+                    onConfirm={() => {
+                        const updated = selectedClass.students.filter((s) => !checkedStudents.includes(s));
+                        selectedClass.students = updated;
+                        setCheckedStudents([]);
+                        setShowConfirmDialog(false);
                     }}
-                />
-                </label>
-                <h3>Students</h3>
+                    />
+
+                <AddStudentsDialog
+                    visible={showAddDialog}
+                    allStudents={allStudents}
+                    currentStudents={selectedClass.students}
+                    selectedToAdd={selectedToAdd}
+                    onSelect={(name) => {
+                        setSelectedToAdd((prev) =>
+                        prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name]
+                        );
+                    }}
+                    onCancel={() => {
+                        setSelectedToAdd([]);
+                        setShowAddDialog(false);
+                    }}
+                    onConfirm={() => {
+                        selectedClass.students.push(...selectedToAdd);
+                        setSelectedToAdd([]);
+                        setShowAddDialog(false);
+                    }}
+                    />
             </div>
 
-            <div className="student-list">
-                {selectedClass.students.map((student, index) => (
-                <label className="student-card" key={index}>
-                    <input
-                    type="checkbox"
-                    checked={checkedStudents.includes(student)}
-                    onChange={() => handleCheckboxChange(student)}
-                    />
-                    <span>{student}</span>
-                </label>
-                ))}
-            </div>
-            </div>
+            
   
           </div>
         </div>
