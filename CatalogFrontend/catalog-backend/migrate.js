@@ -1,5 +1,6 @@
 const sequelize = require("./db");
 const Student = require("./models/Student");
+const Teacher = require("./models/Teacher");
 
 (async () => {
   try {
