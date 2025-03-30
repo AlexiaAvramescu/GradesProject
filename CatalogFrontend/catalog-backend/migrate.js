@@ -3,7 +3,7 @@ const Student = require("./models/Student");
 const Teacher = require("./models/Teacher");
 const Subject = require("./models/Subject");
 const Grade = require("./models/Grade");
-
+const StudentSubject = require("./models/StudentSubject");
 (async () => {
   try {
     console.log("🔄 Încep sincronizarea bazei de date...");
