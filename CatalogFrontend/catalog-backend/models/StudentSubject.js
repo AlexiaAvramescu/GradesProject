@@ -4,20 +4,20 @@ const Student = require('./Student');
 const Subject = require('./Subject');
 
 const StudentSubject = sequelize.define('StudentSubject', {
-    student_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: Student, 
-          key: 'id',      
-        },
-      },
-      subject_id: {
-        type: DataTypes.INTEGER,
-        references: {
-          model: Subject, 
-          key: 'id',      
-        },
-    },
+  subjectId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: "Subjects",
+      key: "id"
+    }
+  },
+  studentId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: "Students",
+      key: "id"
+    }
+  }
 });
 
 

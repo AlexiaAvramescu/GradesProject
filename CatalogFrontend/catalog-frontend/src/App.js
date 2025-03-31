@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<TeacherDashboard />} />
+        <Route path="/teacher" element={<TeacherDashboard />} />
         <Route path="/class/:classId" element={<TeacherClassView />} />
       </Routes>
     </Router>

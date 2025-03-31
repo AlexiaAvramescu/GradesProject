@@ -9,7 +9,12 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
-const PORT = 3000;
+// Routes
+const subjectRoutes = require('./routes/classesRoutes'); // adjust path if needed
+app.use('/', subjectRoutes);
+
+const PORT = 5000;
 app.listen(PORT, async () => {
+
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
