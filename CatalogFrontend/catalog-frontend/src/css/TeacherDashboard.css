@@ -1,0 +1,86 @@
+/* src/css/TeacherDashboard.css */
+
+:root {
+    --theme-red: #f28b82;
+    --text-dark: #333;
+    --text-muted: #555;
+    --card-bg: #fff;
+    --card-shadow: rgba(0, 0, 0, 0.05);
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    color: var(--text-dark);
+  }
+  
+  .dashboard-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .dashboard-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--theme-red);
+    font-size: 28px;
+  }
+  
+  .class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .class-card {
+    background-color: var(--card-bg);
+    border-left: 8px solid var(--theme-red);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px var(--card-shadow);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  }
+  
+  .class-card h3 {
+    margin: 0 0 8px;
+    color: var(--text-dark);
+    font-size: 20px;
+  }
+  
+  .class-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 480px) {
+    .dashboard-container {
+      padding: 20px 10px;
+    }
+  
+    .dashboard-title {
+      font-size: 24px;
+    }
+  
+    .class-card {
+      padding: 16px;
+    }
+  
+    .class-card h3 {
+      font-size: 18px;
+    }
+  
+    .class-card p {
+      font-size: 14px;
+    }
+  }
+  

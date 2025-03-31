@@ -5,13 +5,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import Login from './pages/Login';
 import TeacherClassView from './pages/TeacherClassView';
+import TeacherDashboard from './pages/TeacherDashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/class/:classId" element={<TeacherClassView />} />
+        <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route path="/subject" element={<TeacherClassView />} />
       </Routes>
     </Router>
   );

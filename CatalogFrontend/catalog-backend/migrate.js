@@ -1,10 +1,6 @@
 const sequelize = require("./db");
-const Student = require("./models/Student");
-const Teacher = require("./models/Teacher");
-const Subject = require("./models/Subject");
-const Grade = require("./models/Grade");
-const StudentSubject = require("./models/StudentSubject");
-const TeacherSubject = require("./models/TeacherSubject");
+const { sequelize } = require('./models'); // not from db.js
+const models = require('./models'); // loads all models and associations
 
 (async () => {
   try {
