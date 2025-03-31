@@ -10,8 +10,8 @@ function RemoveStudentsDialog({ visible, students, onCancel, onConfirm }) {
       <div className="confirm-dialog">
         <p>Are you sure you want to remove the following students?</p>
         <ul>
-          {students.map((name, index) => (
-            <li key={index}>{name}</li>
+          {students.map((student) => (
+            <li key={student.id}>{student.name}</li>
           ))}
         </ul>
         <div className="dialog-buttons">

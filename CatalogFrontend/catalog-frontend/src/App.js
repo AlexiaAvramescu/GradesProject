@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
-        <Route path="/class/:classId" element={<TeacherClassView />} />
+        <Route path="/subject" element={<TeacherClassView />} />
       </Routes>
     </Router>
   );

@@ -11,7 +11,7 @@ function TeacherDashboard() {
   const [showDialog, setShowDialog] = useState(false);
 
   const handleClick = (id) => {
-    navigate(`/class/${id}`);
+    navigate(`/subject`);
   };
 
   useEffect(() => {
@@ -23,7 +23,6 @@ function TeacherDashboard() {
         }
 
         const data = await response.json();
-        alert(data)
         setClassList(data);
       } catch (error) {
         console.error('Error loading classes:', error);

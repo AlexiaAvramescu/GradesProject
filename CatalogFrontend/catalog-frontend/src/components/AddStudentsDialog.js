@@ -27,7 +27,7 @@ function AddStudentsDialog({
                 checked={selectedToAdd.includes(student)}
                 onChange={() => onSelect(student)}
               />
-              <span>{student}</span>
+              <span>{student.name}</span>
             </label>
           ))}
         </div>
