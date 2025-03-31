@@ -9,8 +9,11 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
+const cors = require('cors');
+app.use(cors());
+
 // Routes
-const subjectRoutes = require('./routes/classesRoutes'); // adjust path if needed
+const subjectRoutes = require('./routes/teacherRoutes'); // adjust path if needed
 app.use('/', subjectRoutes);
 
 const PORT = 5000;
