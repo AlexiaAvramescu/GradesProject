@@ -13,8 +13,12 @@ const cors = require('cors');
 app.use(cors());
 
 // Routes
-const subjectRoutes = require('./routes/teacherRoutes'); // adjust path if needed
+const subjectRoutes = require('./routes/teacherRoutes');
 app.use('/', subjectRoutes);
+
+// Routes
+const assignmentsRoutes = require('./routes/assignmentsRoutes'); 
+app.use('/', assignmentsRoutes);
 
 const PORT = 5000;
 app.listen(PORT, async () => {
