@@ -16,6 +16,9 @@ app.use(cors());
 const subjectRoutes = require('./routes/teacherRoutes'); // adjust path if needed
 app.use('/', subjectRoutes);
 
+const studentRoutes = require('./routes/studentRoutes');
+app.use('/student', studentRoutes);
+
 const PORT = 5000;
 app.listen(PORT, async () => {
 
