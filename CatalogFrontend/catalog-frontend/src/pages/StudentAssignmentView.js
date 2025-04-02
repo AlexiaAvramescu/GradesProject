@@ -1,19 +1,19 @@
 import React from 'react';
+import '../css/StudentAssignmentView.css'; // optional CSS file
 
 function StudentAssignmentView() {
-  // Placeholder data until endpoint is ready
   const assignments = [
     { id: 1, name: "Math Homework 1", grade: "7" },
     { id: 2, name: "History Paper", grade: "10" }
   ];
 
   return (
-    <div>
-      <h1>Assignment Scores</h1>
-      <ul>
+    <div className="assignment-view-container">
+      <h2 className="assignment-view-title">Assignment Scores</h2>
+      <ul className="assignment-list">
         {assignments.map(a => (
-          <li key={a.id}>
-            {a.name} - Grade: {a.grade}
+          <li key={a.id} className="assignment-item">
+            <strong>{a.name}</strong> — Grade: {a.grade}
           </li>
         ))}
       </ul>
