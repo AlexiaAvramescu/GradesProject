@@ -1,5 +1,5 @@
 const sequelize = require("./db");
-const { sequelize } = require('./models'); // not from db.js
+// const { sequelize } = require('./models'); // not from db.js
 const models = require('./models'); // loads all models and associations
 
 (async () => {
