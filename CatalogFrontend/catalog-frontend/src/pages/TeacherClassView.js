@@ -25,22 +25,22 @@ function TeacherClassView() {
   const [showEditGradeDialog, setShowEditGradeDialog] = useState(false);
 
   const subjectId = 3;
+  const fetchGrades = async () => {
+    try {
+      if (!selectedAssignmentId) return;
+
+      const response = await fetch(`http://localhost:5000/grades?assignmentId=${selectedAssignmentId}`);
+      if (!response.ok) throw new Error('Failed to fetch grades');
+      const data = await response.json();
+      setGrades(data);
+    } catch (error) {
+      console.error('Error loading grades:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchGrades = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/grades?classId=${classId}`);
-        if (!response.ok) throw new Error('Failed to fetch grades');
-        const data = await response.json();
-        setGrades(data);
-      } catch (error) {
-        console.error('Error loading grades:', error);
-      }
-    };
-
     fetchGrades();
-  }, [classId]);
-
+  }, [selectedAssignmentId]); // <-- fetch when this changes
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -72,18 +72,18 @@ function TeacherClassView() {
     fetchStudents();
   }, [classId]);
 
-  useEffect(() => {
-    const fetchAllStudents = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${subjectId}`);
-        if (!response.ok) throw new Error('Failed to fetch students not in class');
-        const data = await response.json();
-        setAllStudents(data.map((s) => ({ id: s.id, name: s.name })));
-      } catch (error) {
-        console.error('Error loading students not in class:', error);
-      }
-    };
+  const fetchAllStudents = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${subjectId}`);
+      if (!response.ok) throw new Error('Failed to fetch students not in class');
+      const data = await response.json();
+      setAllStudents(data.map((s) => ({ id: s.id, name: s.name })));
+    } catch (error) {
+      console.error('Error loading students not in class:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchAllStudents();
   }, [classId]);
 
@@ -95,9 +95,15 @@ function TeacherClassView() {
     );
   };
 
+
+  const handleAssignmentChange = (assignmentId) => {
+    setSelectedAssignmentId(assignmentId); // <-- triggers useEffect
+    setGrades([]); // optional visual reset
+  };
+
+
   const handleRemoveStudents = async () => {
     const teacherId = 1;
-    const subjectId = 3;
     const studentIds = Array.isArray(checkedStudents) ? checkedStudents : [checkedStudents];
 
     try {
@@ -121,7 +127,6 @@ function TeacherClassView() {
 
   const handleAddStudents = async () => {
     const teacherId = 1;
-    const subjectId = 3;
     const studentIds = selectedToAdd.map((s) => s.id);
 
     try {
@@ -151,6 +156,31 @@ function TeacherClassView() {
     } else {
       alert("Please select at least one student and an assignment.");
     }
+  }
+
+  const handleAddGrade = async (gradeValue) => {
+    if (checkedStudents.length === 0 || !selectedAssignmentId) {
+      alert("Please select at least one student and an assignment.");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:5000/grades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignmentId: selectedAssignmentId,
+          studentIds: checkedStudents,
+          grade: gradeValue,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to add grade");
+
+      setShowAddGradeDialog(false);
+      fetchGrades();
+    } catch (error) {
+      console.error("Error adding grade:", error);
+      alert(error);
+    }
   };
 
   const handleDeleteGrade = async () => {
@@ -160,35 +190,73 @@ function TeacherClassView() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/grades/delete`, {
+      const response = await fetch("http://localhost:5000/grades", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          studentId: checkedStudents[0],
           assignmentId: selectedAssignmentId,
+          studentIds: [checkedStudents[0]],
         }),
       });
 
       if (!response.ok) throw new Error("Failed to delete grade");
-      alert("Grade deleted successfully");
 
-      // Refresh grades here
+      alert("Grade deleted successfully");
+      fetchGrades();
     } catch (error) {
       console.error("Error deleting grade:", error);
       alert("Error deleting grade.");
     }
   };
 
-  const handleEditGrade = () => {
+  const handleShowEditGradeDialog = () => {
     if (checkedStudents.length !== 1 || !selectedAssignmentId) {
       alert("Please select exactly one student and an assignment.");
       return;
     }
 
-    setShowEditGradeDialog(true);
+    setShowAddGradeDialog(true);
+  }
+
+  const handleEditGrade = async (updatedGrade) => {
+    if (checkedStudents.length !== 1 || !selectedAssignmentId) {
+      alert("Please select exactly one student and an assignment.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/grades", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignmentId: selectedAssignmentId,
+          studentId: checkedStudents[0],
+          grade: updatedGrade,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update grade");
+      }
+
+      setShowEditGradeDialog(false);
+
+      // Add a small delay to ensure backend commit
+      setTimeout(() => {
+        fetchGrades(); // ensure re-render
+      }, 100);
+
+      alert("Grade updated successfully");
+    } catch (error) {
+      console.error("Error updating grade:", error);
+      alert("Error updating grade.");
+    }
   };
 
 
+  // The rest of the render logic remains unchanged
+  // ... (as already in your original component)
 
   return (
     <div className="classview-container">
@@ -215,8 +283,8 @@ function TeacherClassView() {
             <div className="student-list">
               {students.map((student) => {
                 const studentGrade = grades.find(
-                  (g) => g.studentId === student.id && g.assignmentId === selectedAssignmentId
-                );
+                  g => { return g.studentId === student.id && g.assignmentId === selectedAssignmentId })
+
 
                 return (
                   <label className="student-card" key={student.id}>
@@ -256,7 +324,7 @@ function TeacherClassView() {
 
                   <button
                     className="action-btn"
-                    onClick={() => setShowAddDialog(true)}
+                    onClick={() => { fetchAllStudents(); setShowAddDialog(true); }}
                   >
                     Add Students to Class
                   </button>
@@ -271,7 +339,7 @@ function TeacherClassView() {
 
                   <button
                     className="action-btn"
-                    onClick={handleEditGrade}
+                    onClick={handleShowEditGradeDialog}
                     disabled={checkedStudents.length !== 1 || !selectedAssignmentId}
                   >
                     Update Grade
@@ -312,10 +380,7 @@ function TeacherClassView() {
                 assignmentId={selectedAssignmentId}
                 studentIds={checkedStudents}
                 onClose={() => setShowAddGradeDialog(false)}
-                onGradeSubmitted={(newGrade) => {
-                  console.log("Grade added:", newGrade);
-                  setShowAddGradeDialog(false);
-                }}
+                onGradeSubmitted={handleAddGrade}
               />
             )}
 
@@ -325,10 +390,7 @@ function TeacherClassView() {
                 studentIds={checkedStudents}
                 onClose={() => setShowEditGradeDialog(false)}
                 title="Update Grade"
-                onGradeSubmitted={(updatedGrade) => {
-                  console.log("Grade updated:", updatedGrade);
-                  setShowEditGradeDialog(false);
-                }}
+                onGradeSubmitted={handleEditGrade}
               />
             )}
 
@@ -344,7 +406,7 @@ function TeacherClassView() {
                     name="assignment"
                     className="assignment-radio"
                     checked={selectedAssignmentId === assignment.id}
-                    onChange={() => setSelectedAssignmentId(assignment.id)}
+                    onChange={() => handleAssignmentChange(assignment.id)}
                   />
                   <div className="assignment-text">
                     <div className="assignment-title">{assignment.title}</div>
