@@ -29,6 +29,12 @@ Student.associate = models => {
     foreignKey: "studentId",
     otherKey: "subjectId"
   });
+  Student.belongsToMany(models.Assignment, {
+    through: models.StudentAssignment,
+    foreignKey: 'studentId',
+    otherKey: 'assignmentId',
+    as: 'GradedAssignments'
+  });
 };
 
 module.exports = Student;

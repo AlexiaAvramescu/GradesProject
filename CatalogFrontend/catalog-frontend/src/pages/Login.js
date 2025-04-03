@@ -1,32 +1,44 @@
-import { useState } from "react";
-import axios from "axios";
-import BASE_URL from "../services/api"; 
+import React, { useState } from "react";
 import "../css/Login.css";
-
+import { useNavigate } from 'react-router-dom';
 function Login() {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isProfessor, setIsProfessor] = useState(false);
-    
-    const [message, setMessage] = useState("");
+    const [isTeacher, setIsTeacher] = useState(false);
+    const [error, setError] = useState("");
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        try 
-        {
-            const response = await axios.post(`${BASE_URL}/auth/login`, {
-                username,
-                email,
-                password
+        try {
+            
+            const response = await fetch('http://localhost:5000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, isTeacher })
             });
-
-            setMessage(response.data.message);
-            localStorage.setItem("token", response.data.token);
-        } 
+            //alert(response.ok);
+            //if (!response.ok) throw new Error(response.body);
+            if (!response.ok) {
+                const data=await response.json()
+                setError(data.message); // Extrage textul răspunsului
+                //throw new Error(errorText);
+            }
+            else
+            if(isTeacher===true)
+            {
+                navigate(`/teacher`);
+            }
+            else if(isTeacher===false)
+            {
+                navigate(`/student`);
+                //alert("Conectat pe pagina de student");
+            }
+        }
         catch (error) {
-            setMessage("Eroare la autentificare: " + (error.response?.data.message || "Server error"));
-            alert(message);
+            throw(error);
         }
     };
 
@@ -58,12 +70,15 @@ function Login() {
                 <div className="toggle-container">
                     <input
                         type="checkbox"
-                        checked={isProfessor}
-                        onChange={() => setIsProfessor(!isProfessor)}
+                        checked={isTeacher}
+                        onChange={() => setIsTeacher(!isTeacher)}
                     />
                     <label>Sunt profesor</label>
                 </div>
+                {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
                 <button type="submit">Login</button>
+                <label> - or -</label>
+                <button onClick={() => navigate("/register")}>SignIn</button>
             </form>
         </div>
     );
