@@ -28,6 +28,11 @@ Subject.associate = (models) => {
     foreignKey: "subjectId",
     otherKey: "studentId"
   });
+  Subject.hasMany(models.Assignment, {
+    foreignKey: 'subjectId',
+    as: 'Assignments'
+  });
+  
 };
 
 

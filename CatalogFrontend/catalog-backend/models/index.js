@@ -5,6 +5,8 @@ const Student = require('./Student');
 const Subject = require('./Subject');
 const Teacher = require('./Teacher');
 const Grade = require('./Grade');
+const Assignment = require('./Assignment');
+const StudentAssignment = require('./StudentAssignment')
 const StudentSubject = require('./StudentSubject');
 
 const models = {
@@ -13,6 +15,8 @@ const models = {
   Subject,
   Teacher,
   Grade,
+  Assignment,
+  StudentAssignment,
   StudentSubject
 };
 
