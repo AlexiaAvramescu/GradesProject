@@ -3,14 +3,22 @@ import '../css/StudentAssignmentView.css';
 
 function StudentAssignmentView() {
   const [assignments, setAssignments] = useState([]);
+  const studentId = 1;
+  const classId = 2;
 
   useEffect(() => {
-    // Replace 1 and 2 with actual IDs
-    fetch('http://localhost:5000/student/1/classes/2/assignments')
+    fetch(`http://localhost:5000/student/${studentId}/classes/${classId}/assignments`)
       .then((response) => response.json())
-      .then((data) => setAssignments(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAssignments(data);
+        } else {
+          console.error("Did not receive an array:", data);
+          setAssignments([]);
+        }
+      })
       .catch((err) => console.error(err));
-  }, []);
+  }, [studentId, classId]);
 
   return (
     <div className="assignment-view-container">
@@ -18,7 +26,7 @@ function StudentAssignmentView() {
       <ul className="assignment-list">
         {assignments.map((a) => (
           <li key={a.id} className="assignment-item">
-            <strong>{a.name}</strong> — Grade: {a.Grade.gradeValue}
+            <strong>{a.name}</strong> — Grade: {a.Grade?.gradeValue ?? 'N/A'}
           </li>
         ))}
       </ul>
