@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const models = require('../models'); // your models
+const { Assignment, Grade } = require('../models');
 
 // GET /student/:studentId/classes/:classId/assignments
 router.get('/:studentId/classes/:classId/assignments', async (req, res) => {
   try {
     const { studentId, classId } = req.params;
-    // Example lookup, adjust for your model names/associations
-    const assignments = await models.Assignment.findAll({
-      where: { classId },
-      include: [{
-        model: models.Grade,
-        where: { studentId }
-      }]
+    const assignments = await Assignment.findAll({
+      where: { subjectId: classId }, // Make sure to match the field in the model
+      include: [
+        {
+          model: Grade,
+          where: { studentId },
+          required: false
+        }
+      ]
     });
     res.json(assignments);
   } catch (error) {
