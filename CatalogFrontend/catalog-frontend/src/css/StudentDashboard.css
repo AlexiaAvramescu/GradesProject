@@ -1,0 +1,63 @@
+:root {
+  --theme-red: #f28b82;
+  --text-dark: #333;
+  --card-shadow: rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  margin: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.dashboard-menu ul {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+}
+
+.dashboard-menu li {
+  margin-right: 20px;
+}
+
+.dashboard-menu li a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.dashboard-menu li a:hover {
+  text-decoration: underline;
+}
+
+.class-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.class-card {
+  background-color: #fff;
+  border-left: 8px solid var(--theme-red);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px var(--card-shadow);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.class-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.class-card h3 {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 20px;
+}

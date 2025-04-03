@@ -1,0 +1,25 @@
+.assignment-view-container {
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.assignment-view-title {
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.assignment-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.assignment-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.assignment-item:last-child {
+  border-bottom: none;
+}
