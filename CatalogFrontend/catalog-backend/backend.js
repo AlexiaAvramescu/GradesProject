@@ -29,6 +29,8 @@ app.use(cors());
 const subjectRoutes = require('./routes/teacherRoutes');
 app.use('/', subjectRoutes);
 
+const studentRoutes = require('./routes/studentRoutes');
+app.use('/student', studentRoutes);
 
 const authRoutes = require('./routes/authRoutes'); 
 app.use('/', authRoutes);
@@ -38,8 +40,6 @@ app.use('/', assignmentsRoutes);
 
 const gradesRoutes = require('./routes/gradeRoutes'); 
 app.use('/', gradesRoutes);
-
-
 
 const PORT = 5000;
 app.listen(PORT, async () => {
