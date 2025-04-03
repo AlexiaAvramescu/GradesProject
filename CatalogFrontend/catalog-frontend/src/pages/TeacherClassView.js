@@ -21,8 +21,26 @@ function TeacherClassView() {
   const [showEditAssignmentDialog, setShowEditAssignmentDialog] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
   const [showAddGradeDialog, setShowAddGradeDialog] = useState(false);
+  const [grades, setGrades] = useState([]);
+  const [showEditGradeDialog, setShowEditGradeDialog] = useState(false);
 
   const subjectId = 3;
+
+  useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/grades?classId=${classId}`);
+        if (!response.ok) throw new Error('Failed to fetch grades');
+        const data = await response.json();
+        setGrades(data);
+      } catch (error) {
+        console.error('Error loading grades:', error);
+      }
+    };
+
+    fetchGrades();
+  }, [classId]);
+
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -135,6 +153,43 @@ function TeacherClassView() {
     }
   };
 
+  const handleDeleteGrade = async () => {
+    if (checkedStudents.length !== 1 || !selectedAssignmentId) {
+      alert("Please select exactly one student and an assignment.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/grades/delete`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: checkedStudents[0],
+          assignmentId: selectedAssignmentId,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to delete grade");
+      alert("Grade deleted successfully");
+
+      // Refresh grades here
+    } catch (error) {
+      console.error("Error deleting grade:", error);
+      alert("Error deleting grade.");
+    }
+  };
+
+  const handleEditGrade = () => {
+    if (checkedStudents.length !== 1 || !selectedAssignmentId) {
+      alert("Please select exactly one student and an assignment.");
+      return;
+    }
+
+    setShowEditGradeDialog(true);
+  };
+
+
+
   return (
     <div className="classview-container">
       <div className="classview-wrapper">
@@ -158,40 +213,71 @@ function TeacherClassView() {
             </div>
 
             <div className="student-list">
-              {students.map((student) => (
-                <label className="student-card" key={student.id}>
-                  <input
-                    type="checkbox"
-                    checked={checkedStudents.includes(student.id)}
-                    onChange={() => handleCheckboxChange(student.id)}
-                  />
-                  <span>{student.name}</span>
-                </label>
-              ))}
+              {students.map((student) => {
+                const studentGrade = grades.find(
+                  (g) => g.studentId === student.id && g.assignmentId === selectedAssignmentId
+                );
+
+                return (
+                  <label className="student-card" key={student.id}>
+                    <input
+                      type="checkbox"
+                      checked={checkedStudents.includes(student.id)}
+                      onChange={() => handleCheckboxChange(student.id)}
+                    />
+                    <span>{student.name}</span>
+                    <span className="student-grade">
+                      {selectedAssignmentId ? (studentGrade ? studentGrade.grade : "N/A") : ""}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
+
 
             <div className="student-actions">
               <div className="student-actions">
-                <button
-                  className="action-btn"
-                  onClick={() => {
-                    if (checkedStudents.length > 0) setShowConfirmDialog(true);
-                  }}
-                >
-                  Remove Students from Class
-                </button>
-                <button
-                  className="action-btn"
-                  onClick={handleShowAddGradeDialog}
-                >
-                  Add Grade
-                </button>
-                <button
-                  className="action-btn"
-                  onClick={() => { ;setShowAddDialog(true)}}
-                >
-                  Add Students to Class
-                </button>
+                <div className="student-actions">
+                  <button
+                    className="action-btn"
+                    onClick={() => {
+                      if (checkedStudents.length > 0) setShowConfirmDialog(true);
+                    }}
+                  >
+                    Remove Students from Class
+                  </button>
+
+                  <button
+                    className="action-btn"
+                    onClick={handleShowAddGradeDialog}
+                  >
+                    Add Grade
+                  </button>
+
+                  <button
+                    className="action-btn"
+                    onClick={() => setShowAddDialog(true)}
+                  >
+                    Add Students to Class
+                  </button>
+
+                  <button
+                    className="action-btn"
+                    onClick={handleDeleteGrade}
+                    disabled={checkedStudents.length !== 1 || !selectedAssignmentId}
+                  >
+                    Delete Grade
+                  </button>
+
+                  <button
+                    className="action-btn"
+                    onClick={handleEditGrade}
+                    disabled={checkedStudents.length !== 1 || !selectedAssignmentId}
+                  >
+                    Update Grade
+                  </button>
+                </div>
+
               </div>
             </div>
 
@@ -232,6 +318,20 @@ function TeacherClassView() {
                 }}
               />
             )}
+
+            {showEditGradeDialog && (
+              <AddGradeDialog
+                assignmentId={selectedAssignmentId}
+                studentIds={checkedStudents}
+                onClose={() => setShowEditGradeDialog(false)}
+                title="Update Grade"
+                onGradeSubmitted={(updatedGrade) => {
+                  console.log("Grade updated:", updatedGrade);
+                  setShowEditGradeDialog(false);
+                }}
+              />
+            )}
+
           </div>
 
           <div className="student-list-container">

@@ -214,3 +214,18 @@
     }
   }
   
+  .student-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+  }
+  
+  .student-grade {
+    font-weight: bold;
+    margin-left: auto;
+    color: #2c3e50;
+  }
+  
