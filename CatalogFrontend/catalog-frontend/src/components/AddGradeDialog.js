@@ -10,20 +10,7 @@ function AddGradeDialog({ assignmentId, studentIds, onClose, onGradeSubmitted })
       return;
     }
 
-    try {
-      const response = await fetch('http://localhost:5000/grades', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assignmentId, studentIds, grade })
-      });
-
-      if (!response.ok) throw new Error('Failed to submit grade');
-      const result = await response.json();
-      onGradeSubmitted(result);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit grade.');
-    }
+    onGradeSubmitted(grade);
   };
 
   return (

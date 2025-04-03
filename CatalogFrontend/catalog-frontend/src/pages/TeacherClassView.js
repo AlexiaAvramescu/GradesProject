@@ -148,8 +148,38 @@ function TeacherClassView() {
   const handleShowAddGradeDialog = () => {
     if (selectedAssignmentId && checkedStudents.length > 0) {
       setShowAddGradeDialog(true);
-    } else {
+    } else { 
       alert("Please select at least one student and an assignment.");
+    }
+  }
+
+  const handleAddGrade = async (gradeValue) => {
+    if (checkedStudents.length === 0 || !selectedAssignmentId) {
+      alert("Please select at least one student and an assignment.");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:5000/grades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignmentId: selectedAssignmentId,
+          studentIds: checkedStudents,
+          grade: gradeValue,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to add grade");
+
+      alert("Grade added successfully");
+
+      // Refresh grades
+      const updatedGrades = await response.json();
+      setGrades(updatedGrades);
+      setShowAddGradeDialog(false);
+    } catch (error) {
+      console.error("Error adding grade:", error);
+      alert(error);
     }
   };
 
@@ -160,34 +190,57 @@ function TeacherClassView() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/grades/delete`, {
+      const response = await fetch("http://localhost:5000/grades", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          studentId: checkedStudents[0],
           assignmentId: selectedAssignmentId,
+          studentIds: [checkedStudents[0]], // Ensure it's an array
         }),
       });
 
       if (!response.ok) throw new Error("Failed to delete grade");
+
       alert("Grade deleted successfully");
 
-      // Refresh grades here
+      // Refresh grades
+      setGrades(grades.filter(g => !(g.studentId === checkedStudents[0] && g.assignmentId === selectedAssignmentId)));
     } catch (error) {
       console.error("Error deleting grade:", error);
       alert("Error deleting grade.");
     }
   };
 
-  const handleEditGrade = () => {
+  const handleEditGrade = async (updatedGrade) => {
     if (checkedStudents.length !== 1 || !selectedAssignmentId) {
       alert("Please select exactly one student and an assignment.");
       return;
     }
 
-    setShowEditGradeDialog(true);
-  };
+    try {
+      const response = await fetch("http://localhost:5000/grades", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assignmentId: selectedAssignmentId,
+          studentIds: [checkedStudents[0]],
+          grade: updatedGrade,
+        }),
+      });
 
+      if (!response.ok) throw new Error("Failed to update grade");
+
+      alert("Grade updated successfully");
+
+      // Refresh grades
+      const updatedGrades = await response.json();
+      setGrades(updatedGrades);
+      setShowEditGradeDialog(false);
+    } catch (error) {
+      console.error("Error updating grade:", error);
+      alert("Error updating grade.");
+    }
+  };
 
 
   return (
@@ -312,10 +365,7 @@ function TeacherClassView() {
                 assignmentId={selectedAssignmentId}
                 studentIds={checkedStudents}
                 onClose={() => setShowAddGradeDialog(false)}
-                onGradeSubmitted={(newGrade) => {
-                  console.log("Grade added:", newGrade);
-                  setShowAddGradeDialog(false);
-                }}
+                onGradeSubmitted={handleAddGrade} 
               />
             )}
 
@@ -325,10 +375,7 @@ function TeacherClassView() {
                 studentIds={checkedStudents}
                 onClose={() => setShowEditGradeDialog(false)}
                 title="Update Grade"
-                onGradeSubmitted={(updatedGrade) => {
-                  console.log("Grade updated:", updatedGrade);
-                  setShowEditGradeDialog(false);
-                }}
+                onGradeSubmitted={handleEditGrade} 
               />
             )}
 
