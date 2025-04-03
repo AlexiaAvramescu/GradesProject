@@ -167,7 +167,6 @@ router.get('/students/not-in-class', async (req, res) => {
   if (!classId) {
     return res.status(400).json({ error: 'classId is required' });
   }
-
   try {
     // Find students already in the class
     const subject = await Subject.findByPk(classId, {
@@ -191,7 +190,6 @@ router.get('/students/not-in-class', async (req, res) => {
         }
       }
     });
-
     res.status(200).json(studentsNotInClass);
   } catch (error) {
     console.error('Error fetching students not in class:', error);

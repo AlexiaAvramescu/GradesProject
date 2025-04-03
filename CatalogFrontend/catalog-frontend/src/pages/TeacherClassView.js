@@ -1,10 +1,10 @@
-// src/pages/TeacherClassView.js
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import RemoveStudentsDialog from '../components/RemoveStudentsDialog';
 import AddStudentsDialog from '../components/AddStudentsDialog';
 import CreateAssignmentDialog from '../components/CreateAssignmentDialog';
 import EditAssignmentsDialog from '../components/EditAssignmentsDialog';
+import AddGradeDialog from '../components/AddGradeDialog';
 
 import '../css/TeacherClassView.css';
 
@@ -20,12 +20,11 @@ function TeacherClassView() {
   const [showCreateAssignmentDialog, setShowCreateAssignmentDialog] = useState(false);
   const [showEditAssignmentDialog, setShowEditAssignmentDialog] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
+  const [showAddGradeDialog, setShowAddGradeDialog] = useState(false);
 
   const subjectId = 3;
 
   useEffect(() => {
-    const subjectId = 3;
-
     const fetchAssignments = async () => {
       try {
         const response = await fetch(`http://localhost:5000/assignments?subjectId=${subjectId}`);
@@ -58,7 +57,7 @@ function TeacherClassView() {
   useEffect(() => {
     const fetchAllStudents = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${classId}`);
+        const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${subjectId}`);
         if (!response.ok) throw new Error('Failed to fetch students not in class');
         const data = await response.json();
         setAllStudents(data.map((s) => ({ id: s.id, name: s.name })));
@@ -66,10 +65,9 @@ function TeacherClassView() {
         console.error('Error loading students not in class:', error);
       }
     };
-  
+
     fetchAllStudents();
   }, [classId]);
-  
 
   const handleCheckboxChange = (studentId) => {
     setCheckedStudents((prev) =>
@@ -83,7 +81,6 @@ function TeacherClassView() {
     const teacherId = 1;
     const subjectId = 3;
     const studentIds = Array.isArray(checkedStudents) ? checkedStudents : [checkedStudents];
-
 
     try {
       const response = await fetch('http://localhost:5000/subjects/remove-students', {
@@ -130,6 +127,14 @@ function TeacherClassView() {
     }
   };
 
+  const handleShowAddGradeDialog = () => {
+    if (selectedAssignmentId && checkedStudents.length > 0) {
+      setShowAddGradeDialog(true);
+    } else {
+      alert("Please select at least one student and an assignment.");
+    }
+  };
+
   return (
     <div className="classview-container">
       <div className="classview-wrapper">
@@ -166,21 +171,28 @@ function TeacherClassView() {
             </div>
 
             <div className="student-actions">
-              <button
-                className="action-btn"
-                onClick={() => {
-                  if (checkedStudents.length > 0) setShowConfirmDialog(true);
-                }}
-              >
-                Remove Students from Class
-              </button>
-              <button
-                className="action-btn"
-                onClick={() => setShowAddDialog(true)}
-              >
-                Add Students to Class
-              </button>
-              <button className="action-btn">Add Grade</button>
+              <div className="student-actions">
+                <button
+                  className="action-btn"
+                  onClick={() => {
+                    if (checkedStudents.length > 0) setShowConfirmDialog(true);
+                  }}
+                >
+                  Remove Students from Class
+                </button>
+                <button
+                  className="action-btn"
+                  onClick={handleShowAddGradeDialog}
+                >
+                  Add Grade
+                </button>
+                <button
+                  className="action-btn"
+                  onClick={() => { ;setShowAddDialog(true)}}
+                >
+                  Add Students to Class
+                </button>
+              </div>
             </div>
 
             <RemoveStudentsDialog
@@ -208,7 +220,20 @@ function TeacherClassView() {
               }}
               onConfirm={handleAddStudents}
             />
+
+            {showAddGradeDialog && (
+              <AddGradeDialog
+                assignmentId={selectedAssignmentId}
+                studentIds={checkedStudents}
+                onClose={() => setShowAddGradeDialog(false)}
+                onGradeSubmitted={(newGrade) => {
+                  console.log("Grade added:", newGrade);
+                  setShowAddGradeDialog(false);
+                }}
+              />
+            )}
           </div>
+
           <div className="student-list-container">
             <h3>Assignments</h3>
             <div className="assignment-list">
@@ -237,6 +262,7 @@ function TeacherClassView() {
                 ✎ Edit Assignments
               </button>
             </div>
+
             {showCreateAssignmentDialog && (
               <CreateAssignmentDialog
                 subjectId={subjectId}
@@ -260,7 +286,6 @@ function TeacherClassView() {
                 }}
               />
             )}
-
           </div>
         </div>
       </div>
