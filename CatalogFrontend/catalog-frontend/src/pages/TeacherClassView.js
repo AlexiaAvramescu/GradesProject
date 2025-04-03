@@ -32,7 +32,6 @@ function TeacherClassView() {
       const response = await fetch(`http://localhost:5000/grades?assignmentId=${selectedAssignmentId}`);
       if (!response.ok) throw new Error('Failed to fetch grades');
       const data = await response.json();
-      alert("ceva")
       setGrades(data);
     } catch (error) {
       console.error('Error loading grades:', error);
@@ -210,6 +209,15 @@ function TeacherClassView() {
     }
   };
 
+  const handleShowEditGradeDialog = () => {
+    if (checkedStudents.length !== 1 || !selectedAssignmentId) {
+      alert("Please select exactly one student and an assignment.");
+      return;
+    }
+
+    setShowAddGradeDialog(true);
+  }
+
   const handleEditGrade = async (updatedGrade) => {
     if (checkedStudents.length !== 1 || !selectedAssignmentId) {
       alert("Please select exactly one student and an assignment.");
@@ -227,16 +235,25 @@ function TeacherClassView() {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to update grade");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update grade");
+      }
+
+      setShowEditGradeDialog(false);
+
+      // Add a small delay to ensure backend commit
+      setTimeout(() => {
+        fetchGrades(); // ensure re-render
+      }, 100);
 
       alert("Grade updated successfully");
-      setShowEditGradeDialog(false);
-      fetchGrades();
     } catch (error) {
       console.error("Error updating grade:", error);
       alert("Error updating grade.");
     }
   };
+
 
   // The rest of the render logic remains unchanged
   // ... (as already in your original component)
@@ -322,7 +339,7 @@ function TeacherClassView() {
 
                   <button
                     className="action-btn"
-                    onClick={handleEditGrade}
+                    onClick={handleShowEditGradeDialog}
                     disabled={checkedStudents.length !== 1 || !selectedAssignmentId}
                   >
                     Update Grade

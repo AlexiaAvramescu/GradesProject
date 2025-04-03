@@ -86,6 +86,9 @@ router.delete('/grades', async (req, res) => {
 router.put('/grades', async (req, res) => {
   try {
     const { assignmentId, studentId, grade } = req.body;
+    console.log(assignmentId)
+    console.log(studentId)
+    console.log(assignmentId)
 
     if (!assignmentId || !studentId || grade === undefined) {
       return res.status(400).json({ error: 'Missing required fields' });
