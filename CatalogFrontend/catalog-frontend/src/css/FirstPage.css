@@ -1,0 +1,25 @@
+.first-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f4f6;
+}
+.first-page button {
+    width: 200px;
+    height: 90px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.first-page button:hover {
+    background-color: #357ABD;
+}

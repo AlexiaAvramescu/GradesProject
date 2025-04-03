@@ -27,14 +27,14 @@ function Login() {
                 //throw new Error(errorText);
             }
             else
-            if(isTeacher==true)
+            if(isTeacher===true)
             {
                 navigate(`/teacher`);
             }
-            else if(isTeacher==false)
+            else if(isTeacher===false)
             {
-                //navigate(`/student`);
-                alert("Conectat pe pagina de student");
+                navigate(`/student`);
+                //alert("Conectat pe pagina de student");
             }
         }
         catch (error) {
@@ -77,6 +77,8 @@ function Login() {
                 </div>
                 {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
                 <button type="submit">Login</button>
+                <label> - or -</label>
+                <button onClick={() => navigate("/register")}>SignIn</button>
             </form>
         </div>
     );
