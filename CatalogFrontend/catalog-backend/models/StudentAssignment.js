@@ -18,7 +18,7 @@ const StudentAssignment = sequelize.define('StudentAssignment', {
     }
   },
   grade: {
-    type: DataTypes.FLOAT, // Or INTEGER if you prefer
+    type: DataTypes.FLOAT,
     allowNull: true
   }
 });
