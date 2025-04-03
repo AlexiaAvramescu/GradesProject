@@ -190,6 +190,7 @@ router.get('/students/not-in-class', async (req, res) => {
         }
       }
     });
+    console.log(studentsNotInClass)
     res.status(200).json(studentsNotInClass);
   } catch (error) {
     console.error('Error fetching students not in class:', error);

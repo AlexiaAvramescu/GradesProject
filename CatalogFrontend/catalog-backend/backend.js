@@ -24,8 +24,8 @@ app.get("/", (req, res) => {
 const cors = require('cors');
 app.use(cors());
 
+//ROUTES
 
-// Routes
 const subjectRoutes = require('./routes/teacherRoutes');
 app.use('/', subjectRoutes);
 
@@ -33,9 +33,12 @@ app.use('/', subjectRoutes);
 const authRoutes = require('./routes/authRoutes'); 
 app.use('/', authRoutes);
 
-// Routes
 const assignmentsRoutes = require('./routes/assignmentsRoutes'); 
 app.use('/', assignmentsRoutes);
+
+const gradesRoutes = require('./routes/gradeRoutes'); 
+app.use('/', gradesRoutes);
+
 
 
 const PORT = 5000;

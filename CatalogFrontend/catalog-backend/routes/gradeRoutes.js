@@ -1,34 +1,28 @@
 const express = require('express');
-const { StudentAssignment } = require('../models');
+const { Student, StudentAssignment  } = require('../models');
 const router = express.Router();
 
 router.get('/grades', async (req, res) => {
   try {
-    const { classId } = req.query;
+    const { assignmentId } = req.query;
 
-    if (!classId) {
-      return res.status(400).json({ error: 'Missing classId parameter' });
+    if (!assignmentId) {
+      return res.status(400).json({ error: 'Missing assignmentId parameter' });
     }
 
     const grades = await StudentAssignment.findAll({
-      include: [
-        {
-          model: Student,
-          attributes: ['id', 'name'], // Include student details
-          include: {
-            model: Subject,
-            where: { id: classId }, // Filter by class
-            attributes: [], // No need to fetch extra subject details
-          }
-        },
-        {
-          model: Assignment,
-          attributes: ['id', 'title'] 
-        }
-      ]
+      where: { assignmentId },
+      attributes: ['studentId', 'assignmentId', 'grade']
     });
 
-    res.json(grades);
+    // Ensure plain JSON objects (not Sequelize instances)
+    const simplified = grades.map(g => ({
+      studentId: g.studentId,
+      assignmentId: g.assignmentId,
+      grade: g.grade
+    }));
+    console.log(simplified)
+    res.json(simplified);
   } catch (error) {
     console.error('Error fetching grades:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -36,9 +30,12 @@ router.get('/grades', async (req, res) => {
 });
 
 
+
 router.post('/grades', async (req, res) => {
+  console.log(1)
   try {
     const { assignmentId, studentIds, grade } = req.body;
+    console.log(2)
     console.log(assignmentId)
     console.log("\n")
     console.log(studentIds)
