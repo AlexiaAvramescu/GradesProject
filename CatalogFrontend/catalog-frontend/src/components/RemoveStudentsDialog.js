@@ -1,6 +1,6 @@
 // src/components/RemoveStudentsDialog.js
 import React from 'react';
-import '../css/TeacherClassView.css';
+import '../css/Dialog.css';
 
 function RemoveStudentsDialog({ visible, students, onCancel, onConfirm }) {
   if (!visible) return null;

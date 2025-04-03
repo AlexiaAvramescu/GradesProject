@@ -6,9 +6,9 @@ const { Student, Subject, Teacher } = require('../models');
 
 // POST /subjects - create a subject with teacherId
 router.post('/subjects', async (req, res) => {
-  console.log('Received request body:', req.body); // 👀
+  console.log('Received request body:', req.body);
   const { name, teacherId } = req.body;
-
+  console.log()
   // Basic validation
   if (!name || !teacherId) {
     return res.status(400).json({ error: 'Both name and teacherId are required.' });
@@ -161,15 +161,41 @@ router.get('/subjects/students', async (req, res) => {
 });
 
 
-router.get('/students', async (req, res) => {
+router.get('/students/not-in-class', async (req, res) => {
+  const { classId } = req.query;
+
+  if (!classId) {
+    return res.status(400).json({ error: 'classId is required' });
+  }
   try {
-    const students = await Student.findAll();
-    console.error(students);
-    res.status(200).json(students);
+    // Find students already in the class
+    const subject = await Subject.findByPk(classId, {
+      include: {
+        model: Student,
+        through: { attributes: [] }, // exclude join table attributes
+      }
+    });
+
+    if (!subject) {
+      return res.status(404).json({ error: 'Class not found' });
+    }
+
+    const enrolledStudentIds = subject.Students.map(s => s.id);
+
+    // Get all students NOT in this class
+    const studentsNotInClass = await Student.findAll({
+      where: {
+        id: {
+          [require('sequelize').Op.notIn]: enrolledStudentIds
+        }
+      }
+    });
+    res.status(200).json(studentsNotInClass);
   } catch (error) {
-    console.error('Error fetching students:', error);
+    console.error('Error fetching students not in class:', error);
     res.status(500).json({ error: 'Failed to fetch students.' });
   }
 });
+
 
 module.exports = router;

@@ -122,6 +122,46 @@
   }
   
 
+  .assignment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  
+  .assignment-card {
+    display: flex;
+    align-items: flex-start;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .assignment-radio {
+    margin-top: 6px;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+  
+  .assignment-text {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .assignment-title {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  
+  .assignment-description {
+    font-size: 0.95rem;
+    color: #444;
+  }
+
+  
   .confirm-dialog-overlay {
     position: fixed;
     top: 0;
@@ -157,7 +197,7 @@
     gap: 15px;
     margin-top: 15px;
   }
-  
+
   
   /* Mobile Responsive */
   @media (max-width: 480px) {
@@ -172,5 +212,20 @@
     .classview-title {
       font-size: 22px;
     }
+  }
+  
+  .student-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+  }
+  
+  .student-grade {
+    font-weight: bold;
+    margin-left: auto;
+    color: #2c3e50;
   }
   
