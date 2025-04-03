@@ -5,8 +5,8 @@ import '../css/StudentDashboard.css';
 function StudentDashboard() {
   const navigate = useNavigate();
 
-  const handleClick = (hash) => {
-    window.location.hash = hash; // or navigate("/student/assignment") etc.
+  const handleClick = (route) => {
+    navigate(`/student/${route}`);
   };
 
   return (
