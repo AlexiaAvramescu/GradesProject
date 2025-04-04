@@ -27,7 +27,7 @@ function Login() {
             const data=await response.json();
             if (!response.ok) {
                 setError(data.message);
-                throw new Error(data.message);
+                //throw new Error(data.message);
             }
             else
             if(isTeacher===true)
