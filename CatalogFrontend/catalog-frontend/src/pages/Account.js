@@ -39,9 +39,28 @@ function Account() {
     }
   };
   const handleSavePassword = async (oldPassword, newPassword) => {
-    console.log(oldPassword);
-    setShowDialog(false);
+    
+    try {
+      const response = await fetch('http://localhost:5000/changePassword', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mail: email, oldPassword, newPassword, isTeacher: role }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error("Failed to change username", data.message);
+      }
+      else {
+        setShowDialog(false);
+        //alert("succes");
+      }
+    }
+    catch (error) {
+      throw (error);
+    }
   };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
