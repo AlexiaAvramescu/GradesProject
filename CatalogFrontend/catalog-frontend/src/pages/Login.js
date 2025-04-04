@@ -23,17 +23,15 @@ function Login() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password, isTeacher })
             });
-            //alert(response.ok);
-            //if (!response.ok) throw new Error(response.body);
-            const data=await response.json()
+            
+            const data=await response.json();
             if (!response.ok) {
-                setError(data.message); // Extrage textul răspunsului
-                //throw new Error(errorText);
+                setError(data.message);
+                throw new Error(data.message);
             }
             else
             if(isTeacher===true)
             {
-                alert()
                 login({ name: data.user.name, email: data.user.email, role: data.user.role});
                 navigate(`/teacher`);
             }
@@ -41,7 +39,7 @@ function Login() {
             {
                 login({ name: data.user.name, email: data.user.email, role: data.user.role});
                 navigate(`/student`);
-                //alert("Conectat pe pagina de student");
+                
             }
         }
         catch (error) {

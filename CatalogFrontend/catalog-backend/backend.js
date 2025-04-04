@@ -35,6 +35,9 @@ app.use('/student', studentRoutes);
 const authRoutes = require('./routes/authRoutes'); 
 app.use('/', authRoutes);
 
+const accountRoutes = require('./routes/accountRoutes'); 
+app.use('/', accountRoutes);
+
 const assignmentsRoutes = require('./routes/assignmentsRoutes'); 
 app.use('/', assignmentsRoutes);
 
