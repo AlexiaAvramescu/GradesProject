@@ -1,0 +1,40 @@
+.account-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .account-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #2C5B29; /* Verde natural */
+    text-align: center;
+  }
+  
+  .account-info p {
+    font-size: 18px;
+    margin: 12px 0;
+    color: #333;
+  }
+  
+  .edit-button {
+    display: block;
+    margin: 30px auto 0;
+    padding: 10px 20px;
+    background-color: #eb6d6d; /* Albastru */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-button:hover {
+    background-color: #d95b5b;
+  }
+  

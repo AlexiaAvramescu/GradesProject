@@ -28,9 +28,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Username, email or password is wrong' });
         }
 
-        req.session.user = { id: user.id, email: user.email, name: user.name, role: isTeacher };
-        res.status(200).json({ message: 'Autentificat cu succes!', user: req.session.user });
-
+        
+        return res.status(201).json({
+            message: "Login successful",
+            user: { id: user.id, name: user.name, email: user.email, role: isTeacher },
+          });
         //here there needs to be a password validation if we encryt the password on register 
 
     } catch (error) {
@@ -58,30 +60,30 @@ router.post('/register', async (req, res) => {
                 where: { email: email }
             });
         }
-        
-        if (!user) {
-            if (isTeacher == true)
-            {
-                let newTeacher=Teacher.create({
-                    name: username,
-                    email: email,
-                    password: password
-                });
-                req.session.user = { id: newTeacher.id, email: newTeacher.email, name: newTeacher.name, role: isTeacher };
-            }
-            else
-            {
-                let newStudent=Student.create({
-                    name: username,
-                    email: email,
-                    password: password
-                });
-                req.session.user = { id: newStudent.id, email: newStudent.email, name: newStudent.name, role: isTeacher };
-            }
-           
-            return res.status(201).json({ message: 'Register succesful' });
-        }
 
+        let newUser;
+        if (!user) {
+            if (isTeacher == true) {
+                newUser= Teacher.create({
+                    name: username,
+                    email: email,
+                    password: password
+                });
+            }
+            else {
+                newUser = Student.create({
+                    name: username,
+                    email: email,
+                    password: password
+                });
+            }
+
+            
+            return res.status(201).json({
+                message: "Login successful",
+                user: { id: newUser.id, name: newUser.name, email: newUser.email, role: isTeacher },
+              });
+        }
         res.status(400).json({ message: 'This email is already used by another account' });
 
         //here there needs to be a password validation if we encryt the password on register 
@@ -96,9 +98,9 @@ router.post('/register', async (req, res) => {
 
 router.get('/session', (req, res) => {
     if (req.session.user) {
-        res.json({ loggedIn: true, user: req.session.user });
+        res.status(200).json(req.session.user);
     } else {
-        res.json({ loggedIn: false });
+        res.status(400).json({ message: "idk man" });
     }
 });
 

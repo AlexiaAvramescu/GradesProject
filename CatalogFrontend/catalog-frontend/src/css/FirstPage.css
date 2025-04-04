@@ -11,7 +11,7 @@
     height: 90px;
     padding: 10px;
     margin: 10px;
-    background-color: #4A90E2;
+    background-color: #eb6d6d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -21,5 +21,5 @@
 }
 
 .first-page button:hover {
-    background-color: #357ABD;
+    background-color: #d95b5b;
 }
