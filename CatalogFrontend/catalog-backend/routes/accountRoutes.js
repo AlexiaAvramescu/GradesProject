@@ -1,39 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const { Student, Teacher } = require('../models');
-const { Op } = require('sequelize');
 
-router.put('/change/password', async (req, res) => {
+router.put('/changeUsername', async (req, res) => {
 
-    const { username, password, email, isTeacher } = req.body;
+    const { newName, mail, isTeacher } = req.body;
 
-    if (!username && !password && !email && isTeacher != null) {
-        return res.status(400).json({ error: 'Name, password, and email are required.' });
+    if (!newName && !mail && isTeacher != null) {
+        console.log("ceva");
+        return res.status(404).json({ error: 'Name, email or role not found.' });
     }
 
     try {
         let user;
         if (isTeacher == true) {
-            user = await Teacher.findOne({
-                where: { email: email }
+            [user] = await Teacher.update(
+                { name: newName }, 
+                { where: { email: mail }
             });
         }
         else if (isTeacher == false) {
-            user = await Student.findOne({
-                where: { email: email }
+            [user] = await Student.update(
+                { name: newName }, 
+                { where: { email: mail }
             });
         }
-       
-        if (!user) { 
-            return res.status(400).json({ message: 'Username, email or password is wrong' });
+        if (!user) 
+        {
+            console.log("altceva");
+            return res.status(404).json({ message: 'This email is not found' });
         }
-
-        req.session.user = { id: user.id, email: user.email, name: user.name, role: isTeacher };
-        res.status(200).json({ message: 'Autentificat cu succes!', user: req.session.user });
-        
-
-    } catch (error) {
-        console.error('Error creating subject:', error);
+        return res.status(201).json({
+            message: "Username changed succesfully",
+            user: { id: user.id, name: user.name, email: user.email, role: isTeacher },
+        });
+    }
+    catch (error) {
+        console.error('Error updating username:', error);
         res.status(400).json({ message: 'Utilizator invalid!' });
     }
+
 });
+
+
+module.exports = router;
