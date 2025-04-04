@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import '../css/Account.css';
 import { useSession } from '../context/sessionContext';
-
+import ChangePasswordDialog from "../components/ChangePasswordDialog"
 function Account() {
 
   const { user } = useSession();
@@ -10,7 +10,10 @@ function Account() {
   const [showDialog,setShowDialog ] = useState(false);
 
   const handleSaveClick = async (e) => { };
-  const handleSavePassword = async (e) => { };
+  const handleSavePassword = async (oldPassword,newPassword) => {
+    console.log(oldPassword);
+    setShowDialog(false);
+   };
   const handleEditClick = () => {
     setIsEditing(true);
   };
