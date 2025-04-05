@@ -2,7 +2,9 @@ import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { UploadCloud } from "lucide-react";
 
-function CsvUploadDialog({ open, onClose, onFileSelected }) {
+function AddGradeInBulk({ open, onClose, onFileSelected }) {
+
+
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       onFileSelected(acceptedFiles[0]);
@@ -21,23 +23,23 @@ function CsvUploadDialog({ open, onClose, onFileSelected }) {
   return (
     <div className="confirm-dialog-overlay">
       <div className="confirm-dialog">
-        <button className="action-btn" onClick={onClose}>×</button>
-        <h2>Încarcă fișier CSV</h2>
+        <button className="action-btn" onClick={onClose}>Close</button>
+        <h2>Upload CSV file</h2>
 
         <div {...getRootProps()} className="dropzone">
           <input {...getInputProps()} />
           <UploadCloud size={48} color="#888" />
-          <p>Trage fișierul CSV aici</p>
+          <p>Drag your CSV file here</p>
         </div>
 
-        <p className="or-text">sau</p>
+        <p className="or-text"> - or -</p>
 
         <button className="action-btn" onClick={openFileDialog}>
-          Selectează fișierul
+          Select File
         </button>
       </div>
     </div>
   );
 }
 
-export default CsvUploadDialog;
+export default AddGradeInBulk;

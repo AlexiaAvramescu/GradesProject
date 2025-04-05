@@ -257,7 +257,18 @@ function TeacherClassView() {
   };
 
   const handleFileSelected = (file) => {
-    console.log("Fișier selectat:", file);
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const text = event.target.result;
+      const firstLine = text.split("\n")[0]; // prima linie (în format brut)
+      console.log("Prima linie:", firstLine);
+  
+      const headers = firstLine.split(","); // dacă vrei ca array
+      console.log("Header-ele ca array:", headers);
+    };
+  
+    reader.readAsText(file);
     setShowAddGradeInBulkDialog(false);
   };
 
