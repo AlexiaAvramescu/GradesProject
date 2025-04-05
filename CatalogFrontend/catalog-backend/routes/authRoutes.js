@@ -5,6 +5,10 @@ const { Op } = require('sequelize');
 
 router.post('/login', async (req, res) => {
     const { username, password, email, isTeacher } = req.body;
+    console.log(username)
+    console.log(password)
+    console.log(email)
+    console.log(isTeacher)
 
     if (!username && !password && !email && isTeacher != null) {
         return res.status(400).json({ error: 'Name, password, and email are required.' });
@@ -16,6 +20,7 @@ router.post('/login', async (req, res) => {
                 where:
                     { [Op.and]: [{ email: email }, { name: username }, { password: password }] }
             });
+            console.log(user)
         }
         else if (isTeacher == false) {
             user = await Student.findOne({
@@ -76,7 +81,7 @@ router.post('/register', async (req, res) => {
                     email: email,
                     password: password
                 });
-            }
+            }   
 
             
             return res.status(201).json({

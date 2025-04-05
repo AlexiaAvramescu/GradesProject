@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import FirstPage from './pages/FirstPage';
 import Account from './pages/Account';
 import StudentOverview from './pages/StudentOverview';
+import TeacherHistory from './pages/TeacherHistory';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/account" element={<Account />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route path="/teacher-history" element={<TeacherHistory />} />
         <Route path="/subject" element={<TeacherClassView />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/student/assignment" element={<StudentAssignmentView />} />
