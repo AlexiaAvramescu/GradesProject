@@ -132,7 +132,7 @@ function TeacherClassView() {
       const response = await fetch('http://localhost:5000/subjects/remove-students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teacherID, classId, studentIds })
+        body: JSON.stringify({ teacherID, subjectId: classId, studentIds })
       });
 
       if (!response.ok) throw new Error(response.body);
@@ -155,7 +155,7 @@ function TeacherClassView() {
       const response = await fetch('http://localhost:5000/subjects/enroll-students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teacherId, classId, studentIds })
+        body: JSON.stringify({ teacherId, subjectId: classId, studentIds })
       });
 
       if (!response.ok) throw new Error('Failed to enroll students');
@@ -276,21 +276,73 @@ function TeacherClassView() {
     }
   };
 
-  const handleFileSelected = (file) => {
+  const handleFileSelected = async (file) => {
     const reader = new FileReader();
-
-    reader.onload = (event) => {
-      const text = event.target.result;
-      const firstLine = text.split("\n")[0]; // prima linie (în format brut)
-      console.log("Prima linie:", firstLine);
   
-      const headers = firstLine.split(","); // dacă vrei ca array
-      console.log("Header-ele ca array:", headers);
+    reader.onload = async (event) => {
+      const text = event.target.result;
+      const lines = text.trim().split("\n");
+  
+      // Citirea header-ului și găsirea index-urilor
+      const header = lines[0].split(",").map(h => h.trim());
+      const numeIndex = header.indexOf("nume");
+      const notaIndex = header.indexOf("nota");
+  
+      // Verificăm dacă există coloanele necesare
+      if (numeIndex === -1 || notaIndex === -1) {
+        console.error("Fișierul CSV nu conține coloanele necesare (nume, nota)");
+        return;
+      }
+  
+      // Parcurgem fiecare linie și preluăm valorile
+      const gradeRequests = lines.slice(1).map(async (line) => {
+        const values = line.split(",").map(v => v.trim());
+        const studentName = values[numeIndex];
+        const grade = values[notaIndex];
+
+        const student = students.find((student) => student.name === studentName);
+        if (!student) {
+          console.error(`Studentul ${studentName} nu a fost găsit!`);
+          return;
+        }
+  
+        const nameId = [student.id];
+        
+        try {
+         
+          const response = await fetch("http://localhost:5000/grades", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              assignmentId: selectedAssignmentId,
+              studentIds: nameId,
+              grade: grade,
+            }),
+          });
+  
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Eroare la trimitere:", errorData);
+          } else {
+            console.log("Cerere trimisă cu succes.");
+          }
+        } catch (error) {
+          console.error("Eroare la trimitere:", error);
+        }
+      });
+  
+      // Așteptăm să se finalizeze toate cererile de trimitere
+      await Promise.all(gradeRequests);
+  
+      setShowAddGradeInBulkDialog(false);
+      fetchGrades();
     };
   
     reader.readAsText(file);
-    setShowAddGradeInBulkDialog(false);
   };
+  
 
   // The rest of the render logic remains unchanged
   // ... (as already in your original component)
@@ -300,8 +352,6 @@ function TeacherClassView() {
       <div className="classview-wrapper">
         <h2 className="classview-title">{className} </h2>
         <p cassName="classview-description">ClassID: {classId}</p>
-        
-
         <div className="info-row">
           <div className="student-list-container">
             <div className="list-header">
@@ -369,7 +419,12 @@ function TeacherClassView() {
 
                   <button
                     className="action-btn"
-                    onClick={() => setShowAddGradeInBulkDialog(true)} >
+                    onClick={() => {
+                      if (selectedAssignmentId)
+                        setShowAddGradeInBulkDialog(true)
+                      else
+                        alert("You need to select an assignmnet")
+                    }} >
                     Add Grades in Bulk
                   </button>
 
