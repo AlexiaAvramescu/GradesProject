@@ -10,6 +10,7 @@ import StudentAssignmentView from './pages/StudentAssignmentView';
 import Register from './pages/Register';
 import FirstPage from './pages/FirstPage';
 import Account from './pages/Account';
+import StudentOverview from './pages/StudentOverview';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/subject" element={<TeacherClassView />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/student/assignment" element={<StudentAssignmentView />} />
+        <Route path="/student/overview" element={<StudentOverview />} />
       </Routes>
     </Router>
   );
