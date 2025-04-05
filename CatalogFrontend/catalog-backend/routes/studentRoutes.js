@@ -72,4 +72,46 @@ router.get('/classes/:classId/assignments', async (req, res) => {
   }
 });
 
+// GET /student/:studentId/averages
+router.get('/:studentId/averages', async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const records = await StudentAssignment.findAll({
+      where: { studentId },
+      include: [
+        {
+          model: Assignment,
+          attributes: ['id', 'title'],
+          include: [{ model: Subject, attributes: ['id', 'name'] }]
+        }
+      ]
+    });
+
+    // Group by subject and compute average
+    const grouped = {};
+    records.forEach((ra) => {
+      if (!ra.Assignment || !ra.Assignment.Subject) return;
+      const subj = ra.Assignment.Subject;
+      if (!grouped[subj.id]) {
+        grouped[subj.id] = { subjectId: subj.id, subjectName: subj.name, sum: 0, count: 0 };
+      }
+      if (ra.grade != null) {
+        grouped[subj.id].sum += ra.grade;
+        grouped[subj.id].count += 1;
+      }
+    });
+
+    const results = Object.values(grouped).map((g) => ({
+      subjectId: g.subjectId,
+      subjectName: g.subjectName,
+      average: g.count > 0 ? (g.sum / g.count).toFixed(2) : 'N/A'
+    }));
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error fetching averages:', error);
+    res.status(500).json({ error: 'Failed to fetch averages.' });
+  }
+});
+
 module.exports = router;
