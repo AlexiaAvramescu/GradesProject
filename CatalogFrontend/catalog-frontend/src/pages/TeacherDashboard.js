@@ -65,6 +65,7 @@ function TeacherDashboard() {
   return (
     <div className="dashboard-container">
       <h2 className="dashboard-title">Teacher Dashboard</h2>
+      
       <div className="class-list">
         {classList.map((cls) => (
           <div key={cls.id} className="class-card" onClick={() => handleClick(cls.id)}>
@@ -76,6 +77,12 @@ function TeacherDashboard() {
       <button className="action-btn" style={{ marginTop: '20px' }} onClick={() => setShowDialog(true)}>
         Add Class
       </button>
+      <button
+           className="action-btn"
+          onClick={() => window.location.href = "/teacher-history"}
+        >
+          History
+        </button>
 
       {showDialog && (
         <AddClassDialog

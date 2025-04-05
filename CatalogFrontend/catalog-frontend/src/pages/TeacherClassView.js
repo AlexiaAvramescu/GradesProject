@@ -279,7 +279,8 @@ function TeacherClassView() {
     <div className="classview-container">
       <div className="classview-wrapper">
         <h2 className="classview-title">Class {classId}</h2>
-        <p className="classview-description">Class details here</p>
+        <p cassName="classview-description">Class details here</p>
+        
 
         <div className="info-row">
           <div className="student-list-container">
