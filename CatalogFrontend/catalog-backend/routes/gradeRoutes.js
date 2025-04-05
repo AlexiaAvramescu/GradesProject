@@ -21,7 +21,7 @@ router.get('/grades', async (req, res) => {
       assignmentId: g.assignmentId,
       grade: g.grade
     }));
-    console.log(simplified)
+    //console.log(simplified)
     res.json(simplified);
   } catch (error) {
     console.error('Error fetching grades:', error);
@@ -86,9 +86,9 @@ router.delete('/grades', async (req, res) => {
 router.put('/grades', async (req, res) => {
   try {
     const { assignmentId, studentId, grade } = req.body;
-    console.log(assignmentId)
-    console.log(studentId)
-    console.log(assignmentId)
+    ///console.log(assignmentId)
+    //console.log(studentId)
+    //console.log(assignmentId)
 
     if (!assignmentId || !studentId || grade === undefined) {
       return res.status(400).json({ error: 'Missing required fields' });
