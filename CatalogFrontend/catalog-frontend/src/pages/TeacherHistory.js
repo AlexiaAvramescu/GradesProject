@@ -3,9 +3,9 @@ import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
 
 
-const TeacherHistory = ({ teacherId }) => {
+const TeacherHistory = () => {
     const [gradesData, setGradesData] = useState([]);
-    teacherId = 1;
+    let teacherId = 1;
     useEffect(() => {
       const fetchData = async () => {
         if (!teacherId) {

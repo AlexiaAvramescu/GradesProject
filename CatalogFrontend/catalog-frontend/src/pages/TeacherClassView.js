@@ -6,6 +6,7 @@ import CreateAssignmentDialog from '../components/CreateAssignmentDialog';
 import EditAssignmentsDialog from '../components/EditAssignmentsDialog';
 import AddGradeDialog from '../components/AddGradeDialog';
 import AddGradeInBulk from '../components/AddGradeInBulk';
+import { useSession } from '../context/sessionContext';
 
 import '../css/TeacherClassView.css';
 
@@ -16,7 +17,6 @@ function TeacherClassView() {
   const [checkedStudents, setCheckedStudents] = useState([]); // stores student IDs
   const [students, setStudents] = useState([]);
   const [allStudents, setAllStudents] = useState([]);
-  const { classId } = useParams();
   const [assignments, setAssignments] = useState([]);
   const [showCreateAssignmentDialog, setShowCreateAssignmentDialog] = useState(false);
   const [showEditAssignmentDialog, setShowEditAssignmentDialog] = useState(false);
@@ -25,8 +25,29 @@ function TeacherClassView() {
   const [grades, setGrades] = useState([]);
   const [showEditGradeDialog, setShowEditGradeDialog] = useState(false);
   const [showAddGradeInBulkDialog, setShowAddGradeInBulkDialog] = useState(false);
+  const { user } = useSession();
+  const { classId } = useSession();
+  const [className, setClassName] = useState('');
 
-  const subjectId = 3;
+  useEffect(() => {
+    const fetchClassName = async () => {
+      if (!classId) return;
+  
+      try {
+        const response = await fetch(`http://localhost:5000/subjects/${classId}`);
+        if (!response.ok) throw new Error('Failed to fetch class name');
+        
+        const data = await response.json();
+        setClassName(data.name);
+      } catch (error) {
+        console.error('Error fetching class name:', error);
+      }
+    };
+  
+    fetchClassName();
+  }, [classId]);
+  
+
   const fetchGrades = async () => {
     try {
       if (!selectedAssignmentId) return;
@@ -47,7 +68,7 @@ function TeacherClassView() {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/assignments?subjectId=${subjectId}`);
+        const response = await fetch(`http://localhost:5000/assignments?subjectId=${classId}`);
         if (!response.ok) throw new Error('Failed to fetch assignments');
         const data = await response.json();
         setAssignments(data);
@@ -62,7 +83,7 @@ function TeacherClassView() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/subjects/students?classId=${subjectId}`);
+        const response = await fetch(`http://localhost:5000/subjects/students?classId=${classId}`);
         if (!response.ok) throw new Error('Failed to fetch students');
         const data = await response.json();
         setStudents(data.map((s) => ({ id: s.id, name: s.name })));
@@ -76,7 +97,7 @@ function TeacherClassView() {
 
   const fetchAllStudents = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${subjectId}`);
+      const response = await fetch(`http://localhost:5000/students/not-in-class?classId=${classId}`);
       if (!response.ok) throw new Error('Failed to fetch students not in class');
       const data = await response.json();
       setAllStudents(data.map((s) => ({ id: s.id, name: s.name })));
@@ -105,14 +126,13 @@ function TeacherClassView() {
 
 
   const handleRemoveStudents = async () => {
-    const teacherId = 1;
     const studentIds = Array.isArray(checkedStudents) ? checkedStudents : [checkedStudents];
-
+    const teacherID = user.id;
     try {
       const response = await fetch('http://localhost:5000/subjects/remove-students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teacherId, subjectId, studentIds })
+        body: JSON.stringify({ teacherID, classId, studentIds })
       });
 
       if (!response.ok) throw new Error(response.body);
@@ -128,14 +148,14 @@ function TeacherClassView() {
   };
 
   const handleAddStudents = async () => {
-    const teacherId = 1;
+    const teacherId = user.id;
     const studentIds = selectedToAdd.map((s) => s.id);
 
     try {
       const response = await fetch('http://localhost:5000/subjects/enroll-students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teacherId, subjectId, studentIds })
+        body: JSON.stringify({ teacherId, classId, studentIds })
       });
 
       if (!response.ok) throw new Error('Failed to enroll students');
@@ -278,8 +298,8 @@ function TeacherClassView() {
   return (
     <div className="classview-container">
       <div className="classview-wrapper">
-        <h2 className="classview-title">Class {classId}</h2>
-        <p cassName="classview-description">Class details here</p>
+        <h2 className="classview-title">{className} </h2>
+        <p cassName="classview-description">ClassID: {classId}</p>
         
 
         <div className="info-row">
@@ -458,7 +478,7 @@ function TeacherClassView() {
 
             {showCreateAssignmentDialog && (
               <CreateAssignmentDialog
-                subjectId={subjectId}
+                subjectId={classId}
                 onClose={() => setShowCreateAssignmentDialog(false)}
                 onCreated={(newAssignment) => {
                   setAssignments((prev) => [...prev, newAssignment]);

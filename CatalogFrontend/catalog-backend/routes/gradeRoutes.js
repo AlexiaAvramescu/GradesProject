@@ -161,6 +161,17 @@ router.get('/history', async (req, res) => {
   }
 });
 
+router.get('/subjects/:id', async (req, res) => {
+  try {
+    const subject = await Subject.findByPk(req.params.id);
+    if (!subject) return res.status(404).json({ message: 'Class not found' });
+    res.json(subject);
+  } catch (error) {
+    console.error('Error fetching class:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 module.exports = router;

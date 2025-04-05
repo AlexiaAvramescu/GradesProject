@@ -114,7 +114,7 @@ router.post('/subjects/remove-students', async (req, res) => {
 
 router.get('/subjects', async (req, res) => {
   const { teacherId } = req.query;
-
+  console.log(teacherId)
   try {
     const teacher = await Teacher.findByPk(teacherId, {
       include: {
