@@ -1,5 +1,5 @@
 const express = require('express');
-const { Student, StudentAssignment  } = require('../models');
+const { Student, StudentAssignment, Assignment, Subject  } = require('../models');
 const router = express.Router();
 
 router.get('/grades', async (req, res) => {
@@ -113,6 +113,54 @@ router.put('/grades', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+router.get('/history', async (req, res) => {
+  const { teacherId } = req.query;
+  console.log(teacherId)
+  if (!teacherId) {
+    return res.status(400).json({ message: 'Teacher ID is required' });
+  }
+
+  try {
+    const grades = await StudentAssignment.findAll({
+      include: [
+        {
+          model: Student,
+          as: 'Student',
+          attributes: ['name']
+        },
+        {
+          model: Assignment,
+          as: 'Assignment',
+          attributes: ['title', 'createdAt'],
+          include: [
+            {
+              model: Subject,
+              as: 'Subject',
+              attributes: ['name'],
+              where: { teacherId } // Filter by teacherId
+            }
+          ]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    const formatted = grades.map(grade => ({
+      className: grade.Assignment?.Subject?.name || 'Unknown',
+      assignmentName: grade.Assignment?.title || 'Unknown',
+      studentName: grade.Student?.name || 'Unknown',
+      grade: grade.grade,
+      dateCreated: grade.Assignment?.createdAt?.toISOString().split('T')[0] || 'N/A'
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error('Error fetching grade history:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 module.exports = router;
