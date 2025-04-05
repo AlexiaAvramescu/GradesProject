@@ -32,12 +32,12 @@ function Login() {
             else
             if(isTeacher===true)
             {
-                login({ name: data.user.name, email: data.user.email, role: data.user.role});
+                login({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role});
                 navigate(`/teacher`);
             }
             else if(isTeacher===false)
             {
-                login({ name: data.user.name, email: data.user.email, role: data.user.role});
+                login({ id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role});
                 navigate(`/student`);
                 
             }

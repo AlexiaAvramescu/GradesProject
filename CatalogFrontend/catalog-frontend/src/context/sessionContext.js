@@ -127,7 +127,7 @@ export const SessionProvider = ({ children }) => {
 
   return (
     <SessionContext.Provider
-      value={{ user, classId, login, logout /*, addFavorite, removeFavorite */}}
+      value={{ user, classId, setClassId, login, logout /*, addFavorite, removeFavorite */}}
     >
       {children}
     </SessionContext.Provider>

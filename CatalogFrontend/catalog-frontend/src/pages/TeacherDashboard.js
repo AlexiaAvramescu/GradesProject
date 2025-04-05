@@ -2,22 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/TeacherDashboard.css';
 import AddClassDialog from '../components/AddClassDialog';
-
+import { useSession } from '../context/sessionContext'; 
 
 function TeacherDashboard() {
   const navigate = useNavigate();
-  const teacherId = 1;
+  const { user } = useSession();
   const [classList, setClassList] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
-
+  const { setClassId } = useSession();
+  
   const handleClick = (id) => {
+    setClassId(id); 
+    localStorage.setItem("classId", JSON.stringify(id)); 
     navigate(`/subject`);
   };
-
+  
   useEffect(() => {
+    const teacherId= user.id;
     const fetchSubjects = async () => {
       try {
         const response = await fetch(`http://localhost:5000/subjects?teacherId=${teacherId}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch subjects');
         }
@@ -35,6 +40,8 @@ function TeacherDashboard() {
 
 
   const handleAddClass = async (name) => {
+    const teacherId= user.id;
+
     try {
       const response = await fetch('http://localhost:5000/subjects', {
         method: 'POST',

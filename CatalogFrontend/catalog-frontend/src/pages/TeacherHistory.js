@@ -1,20 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from 'gridjs-react';
 import 'gridjs/dist/theme/mermaid.css';
 
-const TeacherHistory = () => {
-  // Sample data array
-  const data = [
-    ['Math 101', 'Algebra Assignment', 'John Doe', 'A', '2025-03-15'],
-    ['Science 202', 'Chemistry Lab', 'Jane Smith', 'B+', '2025-03-16'],
-    // Add more records as needed
-  ];
 
+const TeacherHistory = () => {
+    const [gradesData, setGradesData] = useState([]);
+    let teacherId = 1;
+    useEffect(() => {
+      const fetchData = async () => {
+        if (!teacherId) {
+          console.error('Teacher ID is required');
+          return;
+        }
+  
+        try {
+          const response = await fetch(`http://localhost:5000/history?teacherId=${teacherId}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          const formattedData = data.map(({ className, assignmentName, studentName, grade, dateCreated }) => [
+            className,
+            assignmentName,
+            studentName,
+            grade,
+            dateCreated,
+          ]);
+          setGradesData(formattedData);
+        } catch (error) {
+          console.error('Error fetching grades history:', error);
+        }
+      };
+  
+      fetchData();
+    }, [teacherId]);
   return (
+    
     <div style={{ padding: '20px' }}>
       <h2>Teacher History</h2>
       <Grid
-        data={data}
+        data={gradesData}
         columns={['Class Name', 'Assignment Name', 'Student Name', 'Grade', 'Date Created']}
         search={true}
         pagination={{
