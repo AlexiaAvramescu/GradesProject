@@ -5,6 +5,7 @@ import AddStudentsDialog from '../components/AddStudentsDialog';
 import CreateAssignmentDialog from '../components/CreateAssignmentDialog';
 import EditAssignmentsDialog from '../components/EditAssignmentsDialog';
 import AddGradeDialog from '../components/AddGradeDialog';
+import AddGradeInBulk from '../components/AddGradeInBulk';
 
 import '../css/TeacherClassView.css';
 
@@ -23,6 +24,7 @@ function TeacherClassView() {
   const [showAddGradeDialog, setShowAddGradeDialog] = useState(false);
   const [grades, setGrades] = useState([]);
   const [showEditGradeDialog, setShowEditGradeDialog] = useState(false);
+  const [showAddGradeInBulkDialog, setShowAddGradeInBulkDialog] = useState(false);
 
   const subjectId = 3;
   const fetchGrades = async () => {
@@ -254,6 +256,10 @@ function TeacherClassView() {
     }
   };
 
+  const handleFileSelected = (file) => {
+    console.log("Fișier selectat:", file);
+    setShowAddGradeInBulkDialog(false);
+  };
 
   // The rest of the render logic remains unchanged
   // ... (as already in your original component)
@@ -331,6 +337,12 @@ function TeacherClassView() {
 
                   <button
                     className="action-btn"
+                    onClick={() => setShowAddGradeInBulkDialog(true)} >
+                    Add Grades in Bulk
+                  </button>
+
+                  <button
+                    className="action-btn"
                     onClick={handleDeleteGrade}
                     disabled={checkedStudents.length !== 1 || !selectedAssignmentId}
                   >
@@ -383,6 +395,13 @@ function TeacherClassView() {
                 onGradeSubmitted={handleAddGrade}
               />
             )}
+
+
+            <AddGradeInBulk
+              open={showAddGradeInBulkDialog}
+              onClose={() => setShowAddGradeInBulkDialog(false)}
+              onFileSelected={handleFileSelected}
+            />
 
             {showEditGradeDialog && (
               <AddGradeDialog

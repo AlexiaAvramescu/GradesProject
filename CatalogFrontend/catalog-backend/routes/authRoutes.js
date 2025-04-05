@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
                     email: email,
                     password: password
                 });
-            }
+            }   
 
             
             return res.status(201).json({
