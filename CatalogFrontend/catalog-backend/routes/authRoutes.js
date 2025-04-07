@@ -69,14 +69,14 @@ router.post('/register', async (req, res) => {
         let newUser;
         if (!user) {
             if (isTeacher == true) {
-                newUser= Teacher.create({
+                newUser= await Teacher.create({
                     name: username,
                     email: email,
                     password: password
                 });
             }
             else {
-                newUser = Student.create({
+                newUser = await Student.create({
                     name: username,
                     email: email,
                     password: password
