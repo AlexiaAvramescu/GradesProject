@@ -24,6 +24,14 @@ app.get("/", (req, res) => {
   res.send("Backend is running!");
 });
 
+if (process.env.NODE_ENV === 'test') {
+  app.post('/test-login', (req, res) => {
+    req.session.userId = req.body.userId;
+    res.status(200).json({ message: 'Test login successful' });
+  });
+}
+
+
 // Routes
 const subjectRoutes = require('./routes/teacherRoutes');
 app.use('/', subjectRoutes);
