@@ -1,0 +1,25 @@
+{
+  "development": {
+    "username": "root",
+    "password": "my-secret-pw",
+    "database": "GradeDataBase",
+    "host": "0.0.0.0",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "my-secret-pw",
+    "database": "GradeDataBaseTest",
+    "host": "0.0.0.0",
+    "port": 3306,
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "password123",
+    "database": "movie_catalog_prod",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

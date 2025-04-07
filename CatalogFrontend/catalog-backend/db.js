@@ -2,29 +2,34 @@ const path = require("path");
 const dotenv = require("dotenv");
 const { Sequelize } = require("sequelize");
 
-// Load environment-specific .env file
+// 1. Load .env or .env.test based on NODE_ENV
 const env = process.env.NODE_ENV || "development";
 const envPath = env === "test" ? ".env.test" : ".env";
 dotenv.config({ path: path.resolve(process.cwd(), envPath) });
 
+// 2. Load config.json for that environment
+const config = require(path.join(__dirname, 'config', 'config.json'))[env];
+
+// 3. Use config directly instead of process.env
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  config.database,
+  config.username,
+  config.password,
   {
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: "mysql",
+    host: config.host,
+    port: config.port,
+    dialect: config.dialect,
     logging: false,
   }
 );
 
+// 4. Optional test connection
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log(`Connected to MySQL (${env} environment)`);
+    console.log(`✅ Connected to MySQL (${env} environment)`);
   } catch (error) {
-    console.error("Connection error:", error);
+    console.error("❌ Connection error:", error);
   }
 })();
 
