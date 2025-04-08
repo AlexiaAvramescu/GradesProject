@@ -13,7 +13,7 @@ router.get('/:studentId/history', async (req, res) => {
         {
           model: Assignment,
           as: 'Assignment',
-          attributes: ['title', 'createdAt'],
+          attributes: ['id', 'title', 'createdAt'],
           include: [
             {
               model: Subject,
@@ -23,17 +23,21 @@ router.get('/:studentId/history', async (req, res) => {
           ]
         }
       ],
-      order: [['Assignment', 'createdAt', 'ASC']]
+      // Order by assignment creation date (most recent first)
+      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'DESC']]
     });
 
-    const list = records.map(r => ({
+    const historyList = records.map(r => ({
+      id: r.Assignment?.id,
       assignmentTitle: r.Assignment?.title || 'Unknown',
       subjectName: r.Assignment?.Subject?.name || 'Unknown',
       grade: r.grade,
-      dateCreated: r.Assignment?.createdAt?.toISOString().split('T')[0] || 'N/A'
+      dateCreated: r.Assignment?.createdAt
+        ? r.Assignment.createdAt.toISOString().split('T')[0]
+        : 'N/A'
     }));
 
-    res.json(list);
+    res.json(historyList);
   } catch (error) {
     console.error('Error fetching student history:', error);
     res.status(500).json({ error: 'Failed to fetch history' });
@@ -107,6 +111,51 @@ router.get('/classes/:classId/assignments', async (req, res) => {
     res.json(assignments);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch assignments.' });
+  }
+});
+
+// GET /all-grades
+router.get('/all-grades', async (req, res) => {
+  try {
+    const studentId = req.session?.userId; 
+    if (!studentId) {
+      return res.status(401).json({ error: 'Not logged in.' });
+    }
+
+    const records = await StudentAssignment.findAll({
+      where: { studentId },
+      include: [
+        {
+          model: Assignment,
+          as: 'Assignment',
+          attributes: ['id', 'title', 'createdAt'],
+          include: [
+            {
+              model: Subject,
+              as: 'Subject',
+              attributes: ['name']
+            }
+          ]
+        }
+      ],
+      // Order by assignment creation date, most recent first
+      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'DESC']]
+    });
+
+    const historyList = records.map(r => ({
+      id: r.Assignment?.id,
+      assignmentTitle: r.Assignment?.title || 'Unknown',
+      subjectName: r.Assignment?.Subject?.name || 'Unknown',
+      grade: r.grade,
+      dateCreated: r.Assignment?.createdAt
+        ? r.Assignment.createdAt.toISOString().split('T')[0]
+        : 'N/A'
+    }));
+
+    res.json(historyList);
+  } catch (error) {
+    console.error('Error fetching all grades:', error);
+    res.status(500).json({ error: 'Failed to fetch all grades' });
   }
 });
 

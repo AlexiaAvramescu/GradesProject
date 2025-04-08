@@ -10,7 +10,8 @@ function StudentOverview() {
       console.log('User ID missing:', user);
       return;
     }
-    fetch(`http://localhost:5000/student/${user.id}/history`)
+    // Use the new endpoint /student/all-grades which uses session-based studentId
+    fetch(`http://localhost:5000/student/all-grades`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setHistory(Array.isArray(data) ? data : []))
       .catch(console.error);
@@ -22,8 +23,8 @@ function StudentOverview() {
       <h2>Grade History</h2>
       {history.map((item, idx) => (
         <div key={idx} className="class-card">
-          <p>Subject: {item.subjectName}</p>
           <p>Assignment: {item.assignmentTitle}</p>
+          <p>Subject: {item.subjectName}</p>
           <p>Grade: {item.grade}</p>
           <p>Date: {item.dateCreated}</p>
         </div>
