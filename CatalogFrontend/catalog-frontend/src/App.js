@@ -12,10 +12,12 @@ import FirstPage from './pages/FirstPage';
 import Account from './pages/Account';
 import StudentOverview from './pages/StudentOverview';
 import TeacherHistory from './pages/TeacherHistory';
+import NavigationBar from './components/NavigationBar';
 
 function App() {
   return (
     <Router>
+      <NavigationBar/>
       <Routes>
         <Route path="/" element={<FirstPage />} />
         <Route path="/login" element={<Login />} />

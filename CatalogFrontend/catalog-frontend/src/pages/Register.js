@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../css/Register.css";
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../context/sessionContext';
 
 function Register() {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Register() {
     const [password, setPassword] = useState("");
     const [isTeacher, setIsTeacher] = useState(false);
     const [error, setError] = useState("");
+    const { login } = useSession();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,18 +24,20 @@ function Register() {
             });
             //alert(response.ok);
             //if (!response.ok) throw new Error(response.body);
+            const data=await response.json();
             if (!response.ok) {
-                const data=await response.json()
                 setError(data.message); // Extrage textul răspunsului
                 //throw new Error(errorText);
             }
             else
             if(isTeacher===true)
             {
+                login({id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role });
                 navigate(`/teacher`);
             }
             else if(isTeacher===false)
             {
+                login({id: data.user.id, name: data.user.name, email: data.user.email, role: data.user.role });
                 navigate(`/student`);
                 //alert("Conectat pe pagina de student");
             }
@@ -62,7 +66,7 @@ function Register() {
                     required
                 />
                 <input
-                    type="text"
+                    type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
