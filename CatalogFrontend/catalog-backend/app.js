@@ -2,8 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const session = require('express-session');
 const cors = require('cors');
+const swaggerSpec = require('./config/swaggerConfig');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
+
+
 
 // Middleware
 app.use(express.json());
@@ -18,6 +22,11 @@ app.use(session({
     maxAge: 1000 * 60 * 60 // 1 hour
   }
 }));
+
+
+// Swagger route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 // Basic test route
 app.get("/", (req, res) => {

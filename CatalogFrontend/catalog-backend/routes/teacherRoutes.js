@@ -2,7 +2,43 @@ const express = require('express');
 const router = express.Router();
 const { Student, Subject, Teacher } = require('../models');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Teacher
+ *   description: Teacher-related operations
+ */
 
+/**
+ * @swagger
+ * /subjects:
+ *   post:
+ *     summary: Create a new subject
+ *     tags: [Teacher]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - teacherId
+ *             properties:
+ *               name:
+ *                 type: string
+ *               teacherId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Subject created successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Teacher not found
+ *       500:
+ *         description: Server error
+ */
 
 // POST /subjects - create a subject with teacherId
 router.post('/subjects', async (req, res) => {
@@ -32,6 +68,42 @@ router.post('/subjects', async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /subjects/enroll-students:
+ *   post:
+ *     summary: Enroll multiple students in a subject
+ *     tags: [Teacher]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - teacherId
+ *               - subjectId
+ *               - studentIds
+ *             properties:
+ *               teacherId:
+ *                 type: integer
+ *               subjectId:
+ *                 type: integer
+ *               studentIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Students enrolled successfully
+ *       400:
+ *         description: Missing fields or invalid data
+ *       404:
+ *         description: Subject or students not found
+ *       500:
+ *         description: Server error
+ */
 
 
 router.post('/subjects/enroll-students', async (req, res) => {
@@ -69,6 +141,44 @@ router.post('/subjects/enroll-students', async (req, res) => {
     res.status(500).json({ error: 'Failed to enroll students.' });
   }
 });
+
+
+
+/**
+ * @swagger
+ * /subjects/remove-students:
+ *   post:
+ *     summary: Remove multiple students from a subject
+ *     tags: [Teacher]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - teacherId
+ *               - subjectId
+ *               - studentIds
+ *             properties:
+ *               teacherId:
+ *                 type: integer
+ *               subjectId:
+ *                 type: integer
+ *               studentIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Students removed from class
+ *       400:
+ *         description: Missing or invalid fields
+ *       404:
+ *         description: Subject or students not found
+ *       500:
+ *         description: Server error
+ */
 
 router.post('/subjects/remove-students', async (req, res) => {
   const { teacherId, subjectId, studentIds } = req.body;
@@ -111,6 +221,27 @@ router.post('/subjects/remove-students', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /subjects:
+ *   get:
+ *     summary: Get all subjects for a teacher
+ *     tags: [Teacher]
+ *     parameters:
+ *       - in: query
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the teacher
+ *     responses:
+ *       200:
+ *         description: List of subjects
+ *       404:
+ *         description: Teacher not found
+ *       500:
+ *         description: Server error
+ */
 
 router.get('/subjects', async (req, res) => {
   const { teacherId } = req.query;
@@ -134,6 +265,31 @@ router.get('/subjects', async (req, res) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /subjects/students:
+ *   get:
+ *     summary: Get all students in a class
+ *     tags: [Teacher]
+ *     parameters:
+ *       - in: query
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the class/subject
+ *     responses:
+ *       200:
+ *         description: List of students in the class
+ *       400:
+ *         description: Missing classId
+ *       404:
+ *         description: Class not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/subjects/students', async (req, res) => {
   const { classId } = req.query;
 
@@ -161,6 +317,29 @@ router.get('/subjects/students', async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /students/not-in-class:
+ *   get:
+ *     summary: Get students not enrolled in a specific class
+ *     tags: [Teacher]
+ *     parameters:
+ *       - in: query
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the class
+ *     responses:
+ *       200:
+ *         description: List of students not in the class
+ *       400:
+ *         description: Missing classId
+ *       404:
+ *         description: Class not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/students/not-in-class', async (req, res) => {
   const { classId } = req.query;
 
