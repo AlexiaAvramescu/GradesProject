@@ -15,7 +15,7 @@
     display: flex;
     gap: 10px;
   }
- .action-btn {
+ .nav-action-btn {
     padding: 10px 15px;
     margin-left: 5px;
     background-color: #f28b82;
@@ -27,7 +27,7 @@
     transition: background-color 0.2s ease;
   }
   
-  .action-btn:hover {
+  .nav-action-btn:hover {
     background-color: #e57373;
   }
   
