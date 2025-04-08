@@ -31,13 +31,12 @@ if (process.env.NODE_ENV === 'test') {
   });
 }
 
-
 // Routes
-const subjectRoutes = require('./routes/teacherRoutes');
-app.use('/', subjectRoutes);
-
 const studentRoutes = require('./routes/studentRoutes');
 app.use('/student', studentRoutes);
+
+const subjectRoutes = require('./routes/teacherRoutes');
+app.use('/', subjectRoutes);
 
 const authRoutes = require('./routes/authRoutes');
 app.use('/', authRoutes);
