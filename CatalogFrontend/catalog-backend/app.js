@@ -7,10 +7,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3000', // allow the frontend
-  credentials: true
-}));
+app.use(cors());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'securizare_sesiune',
   resave: false,
@@ -34,12 +31,13 @@ if (process.env.NODE_ENV === 'test') {
   });
 }
 
-// Routes
-const studentRoutes = require('./routes/studentRoutes');
-app.use('/student', studentRoutes);
 
+// Routes
 const subjectRoutes = require('./routes/teacherRoutes');
 app.use('/', subjectRoutes);
+
+const studentRoutes = require('./routes/studentRoutes');
+app.use('/student', studentRoutes);
 
 const authRoutes = require('./routes/authRoutes');
 app.use('/', authRoutes);
@@ -53,4 +51,5 @@ app.use('/', assignmentsRoutes);
 const gradesRoutes = require('./routes/gradeRoutes');
 app.use('/', gradesRoutes);
 
+// Export the app for tests
 module.exports = app;

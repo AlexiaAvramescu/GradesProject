@@ -114,14 +114,16 @@ router.get('/classes/:classId/assignments', async (req, res) => {
   }
 });
 
-// GET /all-grades
+// GET /student/all-grades
 router.get('/all-grades', async (req, res) => {
   try {
-    const studentId = req.session?.userId; 
+    const studentId = req.session?.userId;
     if (!studentId) {
       return res.status(401).json({ error: 'Not logged in.' });
     }
 
+    // Fetch all StudentAssignment records for the student,
+    // including the assignment title, date, and subject name.
     const records = await StudentAssignment.findAll({
       where: { studentId },
       include: [
@@ -138,12 +140,11 @@ router.get('/all-grades', async (req, res) => {
           ]
         }
       ],
-      // Order by assignment creation date, most recent first
-      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'DESC']]
+      // Order assignments by creation date in ascending order (oldest first)
+      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'ASC']]
     });
 
     const historyList = records.map(r => ({
-      id: r.Assignment?.id,
       assignmentTitle: r.Assignment?.title || 'Unknown',
       subjectName: r.Assignment?.Subject?.name || 'Unknown',
       grade: r.grade,

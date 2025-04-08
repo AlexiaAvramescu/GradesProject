@@ -10,7 +10,7 @@ function StudentOverview() {
       console.log('User ID missing:', user);
       return;
     }
-    // Use the new endpoint /student/all-grades which uses session-based studentId
+    // Use the endpoint /student/all-grades to fetch all graded assignments
     fetch(`http://localhost:5000/student/all-grades`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setHistory(Array.isArray(data) ? data : []))
