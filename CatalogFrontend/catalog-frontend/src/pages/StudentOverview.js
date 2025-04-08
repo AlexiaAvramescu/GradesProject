@@ -9,7 +9,14 @@ function StudentOverview() {
     if (!user?.id) return;
     fetch(`http://localhost:5000/student/${user.id}/averages`)
       .then((res) => res.json())
-      .then((data) => setAverages(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setAverages(data);
+        } else {
+          console.error('Unexpected data:', data);
+          setAverages([]);
+        }
+      })
       .catch(console.error);
   }, [user]);
 
