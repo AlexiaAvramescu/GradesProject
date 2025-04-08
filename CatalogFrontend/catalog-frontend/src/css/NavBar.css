@@ -1,0 +1,33 @@
+ .nav-bar{
+    display: flex;
+    height: 40px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+ }
+ .logo{
+    user-select: none;
+    margin-left: 20px;
+ }
+ .nav-items {
+    display: flex;
+    gap: 10px;
+  }
+ .nav-action-btn {
+    padding: 10px 15px;
+    margin-left: 5px;
+    background-color: #f28b82;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .nav-action-btn:hover {
+    background-color: #e57373;
+  }
+  

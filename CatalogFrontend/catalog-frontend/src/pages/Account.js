@@ -28,7 +28,7 @@ function Account() {
       }
       else {
         setIsEditing(false);
-        login({ name: newName, email: user.email, role: user.role });
+        login({id: user.id, name: newName, email: user.email, role: user.role });
       }
 
 

@@ -41,7 +41,6 @@ router.post('/login', async (req, res) => {
         //here there needs to be a password validation if we encryt the password on register 
 
     } catch (error) {
-        console.error('Error creating subject:', error);
         res.status(400).json({ message: 'Utilizator invalid!' });
     }
 });
