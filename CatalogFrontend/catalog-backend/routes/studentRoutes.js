@@ -160,4 +160,59 @@ router.get('/all-grades', async (req, res) => {
   }
 });
 
+// GET /student/all-class-averages
+router.get('/all-class-averages', async (req, res) => {
+  try {
+    const studentId = req.session?.userId;
+    if (!studentId) {
+      return res.status(401).json({ error: 'Not logged in.' });
+    }
+
+    // Find each subject that this student is enrolled in
+    const subjects = await Subject.findAll({
+      include: [
+        {
+          model: Student,
+          where: { id: studentId },
+          required: true
+        },
+        {
+          model: Assignment,
+          as: 'Assignments',
+          include: [
+            {
+              model: StudentAssignment,
+              where: { studentId },
+              required: false
+            }
+          ]
+        }
+      ]
+    });
+
+    // Calculate the average grade for the student per subject
+    const results = subjects.map((subject) => {
+      const allGrades = [];
+      subject.Assignments?.forEach((assignment) => {
+        const sa = assignment.StudentAssignments?.[0];
+        if (sa && sa.grade !== null && sa.grade !== undefined) {
+          allGrades.push(sa.grade);
+        }
+      });
+      const avg = allGrades.length
+        ? (allGrades.reduce((sum, g) => sum + g, 0) / allGrades.length).toFixed(2)
+        : null;
+      return {
+        subjectName: subject.name,
+        averageGrade: avg || 'N/A'
+      };
+    });
+
+    return res.json(results);
+  } catch (error) {
+    console.error('Error fetching averages:', error);
+    return res.status(500).json({ error: 'Failed to fetch averages' });
+  }
+});
+
 module.exports = router;
