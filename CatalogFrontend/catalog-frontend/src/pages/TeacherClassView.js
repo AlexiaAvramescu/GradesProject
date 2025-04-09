@@ -32,21 +32,21 @@ function TeacherClassView() {
   useEffect(() => {
     const fetchClassName = async () => {
       if (!classId) return;
-  
+
       try {
         const response = await fetch(`http://localhost:5000/subjects/${classId}`);
         if (!response.ok) throw new Error('Failed to fetch class name');
-        
+
         const data = await response.json();
         setClassName(data.name);
       } catch (error) {
         console.error('Error fetching class name:', error);
       }
     };
-  
+
     fetchClassName();
   }, [classId]);
-  
+
 
   const fetchGrades = async () => {
     try {
@@ -278,22 +278,22 @@ function TeacherClassView() {
 
   const handleFileSelected = async (file) => {
     const reader = new FileReader();
-  
+
     reader.onload = async (event) => {
       const text = event.target.result;
       const lines = text.trim().split("\n");
-  
+
       // Citirea header-ului și găsirea index-urilor
       const header = lines[0].split(",").map(h => h.trim());
       const numeIndex = header.indexOf("nume");
       const notaIndex = header.indexOf("nota");
-  
+
       // Verificăm dacă există coloanele necesare
       if (numeIndex === -1 || notaIndex === -1) {
         console.error("Fișierul CSV nu conține coloanele necesare (nume, nota)");
         return;
       }
-  
+
       // Parcurgem fiecare linie și preluăm valorile
       const gradeRequests = lines.slice(1).map(async (line) => {
         const values = line.split(",").map(v => v.trim());
@@ -305,11 +305,11 @@ function TeacherClassView() {
           console.error(`Studentul ${studentName} nu a fost găsit!`);
           return;
         }
-  
+
         const nameId = [student.id];
-        
+
         try {
-         
+
           const response = await fetch("http://localhost:5000/grades", {
             method: "POST",
             headers: {
@@ -321,7 +321,7 @@ function TeacherClassView() {
               grade: grade,
             }),
           });
-  
+
           if (!response.ok) {
             const errorData = await response.json();
             console.error("Eroare la trimitere:", errorData);
@@ -332,17 +332,17 @@ function TeacherClassView() {
           console.error("Eroare la trimitere:", error);
         }
       });
-  
+
       // Așteptăm să se finalizeze toate cererile de trimitere
       await Promise.all(gradeRequests);
-  
+
       setShowAddGradeInBulkDialog(false);
       fetchGrades();
     };
-  
+
     reader.readAsText(file);
   };
-  
+
 
   // The rest of the render logic remains unchanged
   // ... (as already in your original component)
@@ -376,12 +376,14 @@ function TeacherClassView() {
 
                 return (
                   <label className="student-card" key={student.id}>
-                    <input
-                      type="checkbox"
-                      checked={checkedStudents.includes(student.id)}
-                      onChange={() => handleCheckboxChange(student.id)}
-                    />
-                    <span>{student.name}</span>
+                    <div className="student-left">
+                      <input
+                        type="checkbox"
+                        checked={checkedStudents.includes(student.id)}
+                        onChange={() => handleCheckboxChange(student.id)}
+                      />
+                      <span className="student-name">{student.name}</span>
+                    </div>
                     <span className="student-grade">
                       {selectedAssignmentId ? (studentGrade ? studentGrade.grade : "N/A") : ""}
                     </span>
