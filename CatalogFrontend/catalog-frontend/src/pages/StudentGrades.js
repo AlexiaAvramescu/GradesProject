@@ -1,23 +1,41 @@
-import React from 'react';
-import '../css/StudentAssignmentView.css'; // or any suitable CSS
+import React, { useEffect, useState } from 'react';
+import '../css/StudentAssignmentView.css';
 
 function StudentGrades() {
+  const [averages, setAverages] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/student/all-class-averages', {
+      credentials: 'include'
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setAverages(data);
+        } else {
+          setAverages([]);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
   return (
     <div className="assignment-view-container">
       <h2 className="assignment-view-title">All Grades</h2>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table>
         <thead>
           <tr>
-            <th style={{ borderBottom: '1px solid #ccc' }}>Subject</th>
-            <th style={{ borderBottom: '1px solid #ccc' }}>Grade</th>
+            <th>Subject</th>
+            <th>Average Grade</th>
           </tr>
         </thead>
         <tbody>
-          {/* Example placeholder row */}
-          <tr>
-            <td>Math</td>
-            <td>8.5</td>
-          </tr>
+          {averages.map((item, idx) => (
+            <tr key={idx}>
+              <td>{item.subjectName}</td>
+              <td>{item.averageGrade}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
