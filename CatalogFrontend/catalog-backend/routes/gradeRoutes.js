@@ -2,6 +2,35 @@ const express = require('express');
 const { Student, StudentAssignment, Assignment, Subject  } = require('../models');
 const router = express.Router();
 
+
+/**
+ * @swagger
+ * tags:
+ *   name: Grades
+ *   description: Grade management routes
+ */
+
+/**
+ * @swagger
+ * /grades:
+ *   get:
+ *     summary: Get all grades for a specific assignment
+ *     tags: [Grades]
+ *     parameters:
+ *       - in: query
+ *         name: assignmentId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the assignment
+ *     responses:
+ *       200:
+ *         description: List of grades
+ *       400:
+ *         description: Missing assignmentId parameter
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/grades', async (req, res) => {
   try {
     const { assignmentId } = req.query;
@@ -31,6 +60,36 @@ router.get('/grades', async (req, res) => {
 
 
 
+/**
+ * @swagger
+ * /grades:
+ *   post:
+ *     summary: Add or update grades for multiple students
+ *     tags: [Grades]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [assignmentId, studentIds, grade]
+ *             properties:
+ *               assignmentId:
+ *                 type: integer
+ *               studentIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *               grade:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Grades added/updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/grades', async (req, res) => {
   console.log(1)
   try {
@@ -61,6 +120,37 @@ router.post('/grades', async (req, res) => {
   }
 });
 
+
+
+/**
+ * @swagger
+ * /grades:
+ *   delete:
+ *     summary: Delete grades for multiple students
+ *     tags: [Grades]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [assignmentId, studentIds]
+ *             properties:
+ *               assignmentId:
+ *                 type: integer
+ *               studentIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: Grades deleted successfully
+ *       400:
+ *         description: Missing assignmentId or studentIds
+ *       500:
+ *         description: Internal server error
+ */
+
 router.delete('/grades', async (req, res) => {
   try {
     const { assignmentId, studentIds } = req.body;
@@ -83,6 +173,37 @@ router.delete('/grades', async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /grades:
+ *   put:
+ *     summary: Update a grade for a specific student and assignment
+ *     tags: [Grades]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [assignmentId, studentId, grade]
+ *             properties:
+ *               assignmentId:
+ *                 type: integer
+ *               studentId:
+ *                 type: integer
+ *               grade:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Grade updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: Grade not found
+ *       500:
+ *         description: Internal server error
+ */
 router.put('/grades', async (req, res) => {
   try {
     const { assignmentId, studentId, grade } = req.body;
@@ -113,6 +234,29 @@ router.put('/grades', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+/**
+ * @swagger
+ * /history:
+ *   get:
+ *     summary: Get grading history for a teacher
+ *     tags: [Grades]
+ *     parameters:
+ *       - in: query
+ *         name: teacherId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the teacher
+ *     responses:
+ *       200:
+ *         description: List of graded assignments and students
+ *       400:
+ *         description: Missing teacherId
+ *       500:
+ *         description: Internal server error
+ */
 
 router.get('/history', async (req, res) => {
   const { teacherId } = req.query;
@@ -161,6 +305,28 @@ router.get('/history', async (req, res) => {
   }
 });
 
+
+/**
+ * @swagger
+ * /subjects/{id}:
+ *   get:
+ *     summary: Get subject details by ID
+ *     tags: [Grades]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the subject
+ *     responses:
+ *       200:
+ *         description: Subject details
+ *       404:
+ *         description: Class not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/subjects/:id', async (req, res) => {
   try {
     const subject = await Subject.findByPk(req.params.id);

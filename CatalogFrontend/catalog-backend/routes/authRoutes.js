@@ -3,6 +3,64 @@ const router = express.Router();
 const { Student, Teacher } = require('../models');
 const { Op } = require('sequelize');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication and session management routes
+ */
+
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: Log in a user (teacher or student)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *               - email
+ *               - isTeacher
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               isTeacher:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: boolean
+ *       400:
+ *         description: Invalid credentials or input
+ */
 router.post('/login', async (req, res) => {
     const { username, password, email, isTeacher } = req.body;
     console.log(username)
@@ -46,6 +104,57 @@ router.post('/login', async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register a new user (teacher or student)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *               - email
+ *               - isTeacher
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               isTeacher:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Registration successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: boolean
+ *       400:
+ *         description: Email already used or invalid input
+ */
 router.post('/register', async (req, res) => {
     const { username, password, email, isTeacher } = req.body;
 
@@ -99,6 +208,22 @@ router.post('/register', async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /session:
+ *   get:
+ *     summary: Get current session user info
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Session is active and user is returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: No session found or user not logged in
+ */
 
 router.get('/session', (req, res) => {
     if (req.session.user) {
@@ -108,6 +233,19 @@ router.get('/session', (req, res) => {
     }
 });
 
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Logout the current session
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       500:
+ *         description: Error during logout
+ */
 router.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
