@@ -1,6 +1,6 @@
 // src/components/AddStudentsDialog.js
 import React from 'react';
-import '../css/TeacherClassView.css';
+import '../css/AddStudentsDialog.css';
 
 function AddStudentsDialog({
   visible,
