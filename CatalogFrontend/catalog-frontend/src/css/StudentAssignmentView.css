@@ -1,37 +1,48 @@
-.assignment-view-container {
-  background-color: #fff;
-  padding: 20px;
+/* Stilizare pentru containerul general */
+.averages-div {
   margin: 20px;
-  border: 1px solid #dee2e6;
+  padding: 20px;
+  background-color: #f4f4f9; /* Culoare de fundal deschisă */
+  border-radius: 8px; /* Colțuri rotunjite */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Umbră subtilă */
 }
 
-.assignment-view-title {
-  font-size: 1.4rem;
-  margin-bottom: 15px;
+/* Stilizare pentru titlu */
+.averages-div h1 {
+  text-align: center;
+  color: #4A90E2; /* Albastru calm pentru titlu */
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
-.assignment-list {
-  list-style-type: none;
-  padding-left: 0;
+/* Stilizare pentru lista de subiecte */
+.averages-div ul {
+  list-style-type: none; /* Eliminăm bullet-urile */
+  padding: 0;
 }
 
-.assignment-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #ccc;
+/* Stilizare pentru fiecare element din listă */
+.averages-div li {
+  font-size: 18px;
+  padding: 10px;
+  margin: 8px 0;
+  background-color: #ffffff; /* Fundal alb pentru fiecare element */
+  border: 1px solid #ddd; /* Liniile subtile de separare */
+  border-radius: 6px; /* Colțuri rotunjite pentru elemente */
+  display: flex;
+  justify-content: space-between; /* Spațiu între subiect și media */
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Umbra subtilă pe fiecare element */
 }
 
-.assignment-item:last-child {
-  border-bottom: none;
+/* Culoare de fundal pentru un element de listă la hover */
+.averages-div li:hover {
+  background-color: #f0f8ff; /* Culoare albastru deschis la hover */
+  cursor: pointer; /* Cursorul devine pointer când treci cu mouse-ul pe element */
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0;
-}
-
-thead th,
-tbody td {
-  text-align: left;
-  padding: 8px;
+/* Stilizare pentru textul din elementul listat */
+.averages-div li span {
+  font-weight: bold;
+  color: #2C5B29; /* Verde pentru textul subiectului */
 }
