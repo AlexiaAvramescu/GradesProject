@@ -1,6 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const { Assignment, Grade, Subject, Student, StudentAssignment } = require('../models');
+const { Assignment, Subject, Student, StudentAssignment } = require('../models');
+
+// GET /student/:studentId/history
+router.get('/:studentId/history', async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const records = await StudentAssignment.findAll({
+      where: { studentId },
+      include: [
+        {
+          model: Assignment,
+          as: 'Assignment',
+          attributes: ['id', 'title', 'createdAt'],
+          include: [
+            {
+              model: Subject,
+              as: 'Subject',
+              attributes: ['name']
+            }
+          ]
+        }
+      ],
+      // Order by assignment creation date (most recent first)
+      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'DESC']]
+    });
+
+    const historyList = records.map(r => ({
+      id: r.Assignment?.id,
+      assignmentTitle: r.Assignment?.title || 'Unknown',
+      subjectName: r.Assignment?.Subject?.name || 'Unknown',
+      grade: r.grade,
+      dateCreated: r.Assignment?.createdAt
+        ? r.Assignment.createdAt.toISOString().split('T')[0]
+        : 'N/A'
+    }));
+
+    res.json(historyList);
+  } catch (error) {
+    console.error('Error fetching student history:', error);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
 
 // GET /student/:studentId/classes/:classId/assignments
 router.get('/:studentId/classes/:classId/assignments', async (req, res) => {
@@ -27,7 +69,7 @@ router.get('/:studentId/classes/:classId/assignments', async (req, res) => {
       where: { subjectId: classId },
       include: [
         {
-          model: Grade,
+          model: StudentAssignment,
           where: { studentId },
           required: false
         }
@@ -72,45 +114,49 @@ router.get('/classes/:classId/assignments', async (req, res) => {
   }
 });
 
-// GET /student/:studentId/averages
-router.get('/:studentId/averages', async (req, res) => {
+// GET /student/all-grades
+router.get('/all-grades', async (req, res) => {
   try {
-    const { studentId } = req.params;
+    const studentId = req.session?.userId;
+    if (!studentId) {
+      return res.status(401).json({ error: 'Not logged in.' });
+    }
+
+    // Fetch all StudentAssignment records for the student,
+    // including the assignment title, date, and subject name.
     const records = await StudentAssignment.findAll({
       where: { studentId },
       include: [
         {
           model: Assignment,
-          attributes: ['id', 'title'],
-          include: [{ model: Subject, attributes: ['id', 'name'] }]
+          as: 'Assignment',
+          attributes: ['id', 'title', 'createdAt'],
+          include: [
+            {
+              model: Subject,
+              as: 'Subject',
+              attributes: ['name']
+            }
+          ]
         }
-      ]
+      ],
+      // Order assignments by creation date in ascending order (oldest first)
+      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'ASC']]
     });
 
-    // Group by subject and compute average
-    const grouped = {};
-    records.forEach((ra) => {
-      if (!ra.Assignment || !ra.Assignment.Subject) return;
-      const subj = ra.Assignment.Subject;
-      if (!grouped[subj.id]) {
-        grouped[subj.id] = { subjectId: subj.id, subjectName: subj.name, sum: 0, count: 0 };
-      }
-      if (ra.grade != null) {
-        grouped[subj.id].sum += ra.grade;
-        grouped[subj.id].count += 1;
-      }
-    });
-
-    const results = Object.values(grouped).map((g) => ({
-      subjectId: g.subjectId,
-      subjectName: g.subjectName,
-      average: g.count > 0 ? (g.sum / g.count).toFixed(2) : 'N/A'
+    const historyList = records.map(r => ({
+      assignmentTitle: r.Assignment?.title || 'Unknown',
+      subjectName: r.Assignment?.Subject?.name || 'Unknown',
+      grade: r.grade,
+      dateCreated: r.Assignment?.createdAt
+        ? r.Assignment.createdAt.toISOString().split('T')[0]
+        : 'N/A'
     }));
 
-    res.json(results);
+    res.json(historyList);
   } catch (error) {
-    console.error('Error fetching averages:', error);
-    res.status(500).json({ error: 'Failed to fetch averages.' });
+    console.error('Error fetching all grades:', error);
+    res.status(500).json({ error: 'Failed to fetch all grades' });
   }
 });
 

@@ -4,7 +4,6 @@ const sequelize = require('../db');
 const Student = require('./Student');
 const Subject = require('./Subject');
 const Teacher = require('./Teacher');
-const Grade = require('./Grade');
 const Assignment = require('./Assignment');
 const StudentAssignment = require('./StudentAssignment')
 const StudentSubject = require('./StudentSubject');
@@ -14,7 +13,6 @@ const models = {
   Student,
   Subject,
   Teacher,
-  Grade,
   Assignment,
   StudentAssignment,
   StudentSubject
