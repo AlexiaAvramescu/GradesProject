@@ -1,146 +1,153 @@
 const express = require('express');
-const { Op } = require('sequelize');
 const router = express.Router();
 const { Assignment, Subject, Student, StudentAssignment } = require('../models');
 
-// GET /overview
-// Returns a history of all graded assignments (newest first)
-router.get('/overview', async (req, res) => {
+const { Sequelize, Op } = require('sequelize');
+
+router.get('/all-grades', async (req, res) => {
+  const { studentId } = req.query;
+
   try {
-    const studentId = req.session?.userId;
+
     if (!studentId) {
       return res.status(401).json({ error: 'Not logged in.' });
     }
+
     const records = await StudentAssignment.findAll({
-      where: {
-        studentId,
-        grade: { [Op.ne]: null }
+      where: { studentId: studentId },
+      include: {
+        model: Assignment,
+        as: 'Assignment',
+        include: {
+          model: Subject,
+          as: 'Subject',
+        }
       },
+
+    });
+
+    if (!records) {
+      res.status(404);
+    }
+    console.log(records);
+    res.status(200).json(records);
+
+  } catch (error) {
+    console.error('Error fetching all grades:', error);
+    res.status(500).json({ error: 'Failed to fetch all grades' });
+  }
+});
+
+
+router.get('/subjects', async (req, res) => {
+  const { studentId } = req.query;
+  console.log("asdfghjkjgfhdgsfadfdgfhghmj");
+  if (!studentId) {
+    return res.status(401).json({ error: 'Not logged in.' });
+  }
+  try {
+    const records = await StudentAssignment.findAll({
+      where: { studentId: studentId }, // Căutăm după student
       include: [
         {
           model: Assignment,
           as: 'Assignment',
-          attributes: ['id', 'title', 'createdAt'],
           include: [
             {
               model: Subject,
               as: 'Subject',
-              attributes: ['name']
+              attributes: ['id', 'name'], // Includem doar id-ul și numele subiectului
             }
           ]
         }
       ],
-      order: [[{ model: Assignment, as: 'Assignment' }, 'createdAt', 'DESC']]
+
     });
 
-    const historyList = records.map(r => ({
-      id: r.Assignment?.id,
-      assignmentTitle: r.Assignment?.title || 'Unknown',
-      subjectName: r.Assignment?.Subject?.name || 'Unknown',
-      grade: r.grade,
-      dateCreated: r.Assignment?.createdAt
-        ? r.Assignment.createdAt.toISOString().split('T')[0]
-        : 'N/A'
-    }));
+    let subjects = {};
+    records.forEach(element => {
+      if (subjects[element.Assignment.Subject.name])
+        subjects[element.Assignment.Subject.name].push(element.grade);
+      else {
+        subjects[element.Assignment.Subject.name] = [element.grade];
+      }
+    });
 
-    res.json(historyList);
+    let averages = {};
+
+    for (let subjectName in subjects) {
+      // Sum all grades for the subject
+      let sum = subjects[subjectName].reduce((acc, grade) => acc + grade, 0);
+      // Calculate the average
+      let average = sum / subjects[subjectName].length;
+      // Store the average in the averages object
+      averages[subjectName] = average;
+    }
+
+
+    //console.log(averages);
+
+    res.status(200).json({averages}); // Returnează subiectele
   } catch (error) {
-    console.error('Error fetching overview:', error);
-    res.status(500).json({ error: 'Failed to fetch overview' });
+    console.error('Error fetching subjects:', error);
+    res.status(500).json({ error: 'Failed to fetch subjects' });
   }
 });
 
-// GET /assignment
-// Returns all currently active (ungraded) assignments for this student
-router.get('/assignment', async (req, res) => {
-  try {
-    const studentId = req.session?.userId;
-    if (!studentId) {
-      return res.status(401).json({ error: 'Not logged in.' });
-    }
-    // Fetch all subjects that the student is enrolled in
-    const subjects = await Subject.findAll({
-      include: [{ model: Student, where: { id: studentId }, required: true }]
-    });
-    const subjectIds = subjects.map(s => s.id);
 
-    // Fetch all assignments for these subjects
-    const allAssignments = await Assignment.findAll({
-      where: { subjectId: { [Op.in]: subjectIds } },
-      include: [
-        {
-          model: StudentAssignment,
-          as: 'StudentAssignments',
-          where: { studentId },
-          required: false
-        }
-      ]
-    });
-
-    // Filter to get only those that are not graded yet
-    const ungraded = allAssignments.filter(a => {
-      const assignmentRecord = a.StudentAssignments?.[0];
-      return !assignmentRecord || assignmentRecord.grade == null;
-    });
-
-    res.json(ungraded);
-  } catch (error) {
-    console.error('Error fetching ungraded assignments:', error);
-    res.status(500).json({ error: 'Failed to fetch ungraded assignments' });
+router.get('/total-average', async (req, res) => {
+  const { studentId } = req.query;
+  console.log("asdfghjkjgfhdgsfadfdgfhghmj");
+  if (!studentId) {
+    return res.status(401).json({ error: 'Not logged in.' });
   }
-});
-
-// GET /grades
-// Returns a list of subjects and the average grade for each
-router.get('/grades', async (req, res) => {
   try {
-    const studentId = req.session?.userId;
-    if (!studentId) {
-      return res.status(401).json({ error: 'Not logged in.' });
-    }
-
-    const subjects = await Subject.findAll({
+    const records = await StudentAssignment.findAll({
+      where: { studentId: studentId }, // Căutăm după student
       include: [
-        {
-          model: Student,
-          where: { id: studentId },
-          required: true
-        },
         {
           model: Assignment,
-          as: 'Assignments',
+          as: 'Assignment',
           include: [
             {
-              model: StudentAssignment,
-              where: { studentId },
-              required: false
+              model: Subject,
+              as: 'Subject',
+              attributes: ['id', 'name'], // Includem doar id-ul și numele subiectului
             }
           ]
         }
-      ]
+      ],
+
     });
 
-    const results = subjects.map((subject) => {
-      const allGrades = [];
-      subject.Assignments?.forEach((assignment) => {
-        const sa = assignment.StudentAssignments?.[0];
-        if (sa && sa.grade !== null && sa.grade !== undefined) {
-          allGrades.push(sa.grade);
-        }
-      });
-      const avg = allGrades.length
-        ? (allGrades.reduce((sum, g) => sum + g, 0) / allGrades.length).toFixed(2)
-        : null;
-      return {
-        subjectName: subject.name,
-        averageGrade: avg || 'N/A'
-      };
+    let subjects = {};
+    records.forEach(element => {
+      if (subjects[element.Assignment.Subject.name])
+        subjects[element.Assignment.Subject.name].push(element.grade);
+      else {
+        subjects[element.Assignment.Subject.name] = [element.grade];
+      }
     });
 
-    return res.json(results);
+    let averages = [];
+
+    for (let subjectName in subjects) {
+      let sum = subjects[subjectName].reduce((acc, grade) => acc + grade, 0);
+      let average = sum / subjects[subjectName].length;
+      averages[subjectName] = average;
+    }
+    
+    // Calculăm media totală
+    let totalAverages = Object.values(averages).reduce((acc, average) => acc + average, 0);
+    totalAverages /= Object.values(averages).length;
+    
+    console.log(averages);      // Media pentru fiecare subiect
+    console.log(totalAverages); 
+
+    res.status(200).json(totalAverages); // Returnează subiectele
   } catch (error) {
-    console.error('Error fetching grades:', error);
-    return res.status(500).json({ error: 'Failed to fetch grades' });
+    console.error('Error fetching subjects:', error);
+    res.status(500).json({ error: 'Failed to fetch subjects' });
   }
 });
 
