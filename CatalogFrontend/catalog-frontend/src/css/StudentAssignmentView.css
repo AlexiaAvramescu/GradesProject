@@ -23,3 +23,15 @@
 .assignment-item:last-child {
   border-bottom: none;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+thead th,
+tbody td {
+  text-align: left;
+  padding: 8px;
+}

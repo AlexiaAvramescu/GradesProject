@@ -13,6 +13,7 @@ import Account from './pages/Account';
 import StudentOverview from './pages/StudentOverview';
 import TeacherHistory from './pages/TeacherHistory';
 import NavigationBar from './components/NavigationBar';
+import StudentGrades from './pages/StudentGrades';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/student/assignment" element={<StudentAssignmentView />} />
         <Route path="/student/overview" element={<StudentOverview />} />
+        <Route path="/student/grades" element={<StudentGrades />} />
       </Routes>
     </Router>
   );
